@@ -75,6 +75,9 @@ class FileSystemHook(object):
 
         return representations
 
+    def exists(self):
+        return os.path.isdir(self.__get_data_item_dir())
+
     def __get_data_item_dir(self):
         return os.path.join(self.__root_dir, self.filename)
 

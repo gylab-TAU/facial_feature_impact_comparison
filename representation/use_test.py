@@ -1,11 +1,14 @@
 from representation.raw_model_layers_dict import get_model_layers_dict
 from representation.representation_extraction import RepresentationExtractor
 from representation.representation_save_hook import FileSystemHook
+from representation.analysis.datapoints_rep_compare import DatapointsRepComparer
+from representation.analysis.euclidian_distance_compare import EuclidianDistanceCompare
 import torchvision
-import torch
+import numpy as np
 import os
 import torchvision.transforms as transforms
 from PIL import Image, ImageOps
+import pickle
 
 
 if __name__ == '__main__':
@@ -22,14 +25,31 @@ if __name__ == '__main__':
         normalize,
     ])
 
-    im1 = Image.open('../tests/raw_test_dataset/class_1/blonde.jpg')
+    # im1 = Image.open('../tests/raw_test_dataset/class_1/blonde.jpg')
+    # if im1.mode != 'RGB':
+    #     im1 = im1.convert('RGB')
+    # im1t = tt(im1)
+    # im1t = im1t.unsqueeze(0)
+    #
+    # reps = re.get_layers_representation(im1t, f'blonde')
 
+    im1 = Image.open('../tests/raw_test_dataset/class_1/blonde.jpg')
     if im1.mode != 'RGB':
         im1 = im1.convert('RGB')
-
     im1t = tt(im1)
     im1t = im1t.unsqueeze(0)
 
-    for i in range(50):
-        image = torch.randn(1, 3, 224, 224)
-        reps = re.get_layers_representation(image, f'rand_image{i}')
+    re.save_layers_representation(im1t, f'blonde')
+
+    im1 = Image.open('../tests/raw_test_dataset/class_1/black-hair.jpg')
+    if im1.mode != 'RGB':
+        im1 = im1.convert('RGB')
+    im1t = tt(im1)
+    im1t = im1t.unsqueeze(0)
+
+    re.save_layers_representation(im1t, f'black-hair')
+
+    comp = DatapointsRepComparer(representation_extractor=re, comparison=EuclidianDistanceCompare())
+    comparison = comp.compare_datapoints('blonde', 'black-hair')
+    with open('./reps/comp.pkl', 'wb') as f:
+        pickle.dump(comparison, f)

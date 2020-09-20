@@ -17,6 +17,7 @@ class RepresentationExtractor(object):
         representations = self.representation_hook.load()
         return representations
 
-    def save_layers_representation(self, data_point, data_point_key):
+    def save_layers_representation(self, data_point: torch.Tensor, data_point_key):
         self.representation_hook.set_data_point_key(data_point_key)
-        self.model(data_point)
+        if not self.representation_hook.exists():
+            self.model(data_point)
