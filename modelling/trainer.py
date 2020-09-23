@@ -12,26 +12,27 @@ import const
 class Trainer(object):
     def __init__(self, model, criterion, optimizer, lr_scheduler, model_store, best_acc1:float = 0):
         self.model = model
-        self.criterion = criterion
-        self.optimizer = optimizer
-        self.lr_scheduler = lr_scheduler
-        self.model_store = model_store
-        self.best_acc1 = best_acc1
+        self.__criterion = criterion
+        self.__optimizer = optimizer
+        self.__lr_scheduler = lr_scheduler
+        self.__model_store = model_store
+        self.__best_acc1 = best_acc1
 
-    def get_trained_model(self, start_epoch, end_epoch, data_loaders):
+    def train_model(self, start_epoch, end_epoch, data_loaders):
         for epoch in range(start_epoch, end_epoch):
 
             # modelling for one epoch
             self.__per_phase(epoch, const.TRAIN_PHASE)
             phase_loss, phase_acc = self.__per_phase(epoch, const.VAL_PHASE)
 
-            self.lr_scheduler.step()
+            self.__lr_scheduler.step()
 
             # remember best acc@1 and save checkpoint
-            is_best = phase_acc > self.best_acc1
-            self.best_acc1 = max(phase_acc, self.best_acc1)
+            is_best = phase_acc > self.__best_acc1
+            self.__best_acc1 = max(phase_acc, self.__best_acc1)
 
-            self.model_store.save_model(self.model, self.optimizer, epoch, self.best_acc1, is_best)
+            self.__model_store.save_model(self.model, self.__optimizer, epoch, self.__best_acc1, is_best)
+
 
     def __per_phase(self, epoch, phase, data_loaders):
         # batch_time, losses, top1, top5, data_time, progress = get_epoch_meters(self.train_loader, epoch)
@@ -65,12 +66,12 @@ class Trainer(object):
 
         # compute output
         output = self.model(images)
-        loss = self.criterion(output, target)
+        loss = self.__criterion(output, target)
 
         # compute gradient and do optimizer step
         if self.model.training:
-            self.optimizer.zero_grad()
+            self.__optimizer.zero_grad()
             loss.backward()
-            self.optimizer.step()
+            self.__optimizer.step()
 
         return loss.data.item(), torch.sum(output == target)

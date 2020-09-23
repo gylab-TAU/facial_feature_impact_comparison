@@ -7,10 +7,10 @@ class FileSystemHook(object):
     """
     A representation hook class, pickling the reps to the FS
     """
-    def __init__(self, layers_dict, root_dir, filename):
+    def __init__(self, layers_dict, root_dir):
         self.__layers_dict = layers_dict
         self.__root_dir = root_dir
-        self.filename = filename
+        self.__filename = None
 
     def set_data_point_key(self, key):
         """
@@ -18,7 +18,7 @@ class FileSystemHook(object):
         :param key: The key to the data point
         :return: None
         """
-        self.filename = key
+        self.__filename = key
 
     def save_model_io(self, layer, input, output):
         """
@@ -79,7 +79,7 @@ class FileSystemHook(object):
         return os.path.isdir(self.__get_data_item_dir())
 
     def __get_data_item_dir(self):
-        return os.path.join(self.__root_dir, self.filename)
+        return os.path.join(self.__root_dir, self.__filename)
 
     def __get_rep_path(self, layer):
         path = os.path.join(self.__get_data_item_dir(), f'{self.__layers_dict[layer]}_{str(layer)}.pkl')

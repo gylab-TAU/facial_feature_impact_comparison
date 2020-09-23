@@ -4,7 +4,7 @@ import os
 
 class LocalModelStore(object):
     def __init__(self, arch, experiment_name, root_dir):
-        self.__model_store_path = os.path.join(root_dir, experiment_name, arch)
+        self.__model_store_path = os.path.join(root_dir, experiment_name, arch, 'models')
 
     def save_model(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer, epoch: int, acc: float, is_best: bool):
         path = self.__get_model_path(self.__get_model_filename(epoch, is_best))
@@ -15,8 +15,8 @@ class LocalModelStore(object):
                 'acc': acc,
                 'optimizer': optimizer.state_dict()}, f)
 
-    def load_model_and_optimizer(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, epoch: int = -1):
-        path = self.__get_model_path(self.__get_model_filename(epoch, epoch == -1))
+    def load_model_and_optimizer(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, epoch: int = 0):
+        path = self.__get_model_path(self.__get_model_filename(epoch, epoch == 0))
         return self.load_model_and_optimizer_loc(model, optimizer=optimizer, model_location=path)
 
     def load_model_and_optimizer_loc(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, model_location=None):

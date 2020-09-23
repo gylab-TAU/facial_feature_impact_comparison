@@ -14,7 +14,7 @@ import pickle
 if __name__ == '__main__':
     test_vgg = torchvision.models.vgg16()
     image_path = ''
-    re = RepresentationExtractor(test_vgg, get_model_layers_dict(test_vgg), FileSystemHook(get_model_layers_dict(test_vgg),os.path.join('.', 'reps'), 'blonde'))
+    re = RepresentationExtractor(test_vgg, get_model_layers_dict(test_vgg), FileSystemHook(get_model_layers_dict(test_vgg),os.path.join('.', 'reps')))
     im_size = 224
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
