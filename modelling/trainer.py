@@ -22,7 +22,7 @@ class Trainer(object):
         for epoch in range(start_epoch, end_epoch):
 
             # modelling for one epoch
-            # self.__per_phase(epoch, const.TRAIN_PHASE, data_loaders)
+            self.__per_phase(epoch, const.TRAIN_PHASE, data_loaders)
             phase_loss, phase_acc = self.__per_phase(epoch, const.VAL_PHASE, data_loaders)
 
             self.__lr_scheduler.step()
