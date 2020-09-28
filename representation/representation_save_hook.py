@@ -33,13 +33,13 @@ class FileSystemHook(object):
 
         with open(output_path, 'wb') as f:
             pickle.dump({
-                'rep': output.clone().detach(),
+                'rep': output.clone().detach().cpu(),
                 'layer': 'output'
             }, f)
 
         with open(input_path, 'wb') as f:
             pickle.dump({
-                'rep': input[0].clone().detach(),
+                'rep': input[0].clone().detach().cpu(),
                 'layer': 'input'
             }, f)
 
@@ -54,7 +54,7 @@ class FileSystemHook(object):
         """
         with open(self.__get_rep_path(layer), 'wb') as f:
             pickle.dump({
-                'rep': output.clone().detach(),
+                'rep': output.clone().detach().cpu(),
                 'layer': self.__layers_dict[layer]
             }, f)
 

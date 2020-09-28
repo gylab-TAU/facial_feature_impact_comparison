@@ -5,14 +5,14 @@ import shutil
 def transfer_datapoints(dest_dataset_loc, source_path, data_points):
     for point in data_points:
         dest_point = os.path.join(dest_dataset_loc, os.path.relpath(point, source_path))
-
+        os.makedirs(os.path.dirname(dest_point), exist_ok=True)
         try:
-            os.symlink(point, dest_point)
+            os.symlink(os.path.abspath(point), dest_point)
         except OSError:
             shutil.copyfile(point, dest_point)
 
 
-def transfer_datapoints_to_phase(dest_dataset_loc, phase, data_class, data_points):
+def transfer_datapoints_to_phase2(dest_dataset_loc, phase, data_class, data_points):
     dest_dir = os.path.join(dest_dataset_loc, phase, data_class)
 
     os.makedirs(dest_dir)

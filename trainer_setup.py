@@ -1,4 +1,5 @@
 import json
+import os
 from modelling.trainer_factory import TrainerFactory
 from modelling.model_initializer import ModelInitializer
 from modelling.criterion_initializer import CrossEntropyCriterionInitializer
@@ -9,10 +10,8 @@ from modelling.local_model_store import LocalModelStore
 
 def get_trainer(config, num_classes, start_epoch):
     model_store = LocalModelStore(config['MODELLING']['architecture'],
-                                  config['GENERAL']['root_dir'],
-                                  config['GENERAL']['experiment_name'])
-
-
+                                  config['GENERAL']['experiment_name'],
+                                  config['GENERAL']['root_dir'])
 
     trainer_factory = TrainerFactory(
         ModelInitializer(json.loads(config['MODELLING']['feature_parallelized_architectures'])),

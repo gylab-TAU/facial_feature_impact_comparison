@@ -22,8 +22,8 @@ class Trainer(object):
         for epoch in range(start_epoch, end_epoch):
 
             # modelling for one epoch
-            self.__per_phase(epoch, const.TRAIN_PHASE)
-            phase_loss, phase_acc = self.__per_phase(epoch, const.VAL_PHASE)
+            # self.__per_phase(epoch, const.TRAIN_PHASE, data_loaders)
+            phase_loss, phase_acc = self.__per_phase(epoch, const.VAL_PHASE, data_loaders)
 
             self.__lr_scheduler.step()
 
@@ -49,12 +49,11 @@ class Trainer(object):
         self.model.train(phase == const.TRAIN_PHASE)
 
         with torch.set_grad_enabled(phase == const.TRAIN_PHASE):
-            for i in tqdm(data_loaders[phase], desc=phase):
-                images, target = data_loaders[phase][i]
+            for (images, target) in tqdm(data_loaders[phase], desc=phase):
 
                 batch_loss, batch_acc = self.__per_batch(images, target)
                 phase_loss += batch_loss / phase_size
-                phase_acc += batch_acc / phase_size
+                phase_acc += batch_acc.item() / phase_size
 
         return phase_loss, phase_acc
 
@@ -68,10 +67,11 @@ class Trainer(object):
         output = self.model(images)
         loss = self.__criterion(output, target)
 
+        _, preds = torch.max(output, 1)
         # compute gradient and do optimizer step
         if self.model.training:
             self.__optimizer.zero_grad()
             loss.backward()
             self.__optimizer.step()
 
-        return loss.data.item(), torch.sum(output == target)
+        return loss.data.item(), torch.sum(preds == target.data)

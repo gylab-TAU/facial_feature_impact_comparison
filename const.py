@@ -1,4 +1,4 @@
 
-TRAIN_PHASE='TRAIN'
-VAL_PHASE='VAL'
+TRAIN_PHASE='train'
+VAL_PHASE='val'
 CONFIG_PATH='./experiment_config.cfg'

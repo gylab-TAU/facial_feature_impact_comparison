@@ -4,15 +4,17 @@ from representation.representation_save_hook import FileSystemHook
 from representation.representation_extraction import RepresentationExtractor
 from representation.rep_layer_model_dict import get_model_layers_dict
 import os.path
-
+from tqdm import tqdm
 
 class LFWTester(object):
-    def __init__(self, labeled_pairs_list, reps_cache_path, image_loader, rep_accuracy_tester, comparison_calc):
+    def __init__(self, labeled_pairs_list, reps_cache_path, image_loader, rep_accuracy_tester, comparison_calc,
+                 lfw_dir: str):
         self.__labeled_pairs_list = labeled_pairs_list
         self.__reps_cache_path = reps_cache_path
         self.__image_loader = image_loader
         self.__rep_accuracy_tester = rep_accuracy_tester
         self.__comparison_calc = comparison_calc
+        self.__lfw_dir = lfw_dir
 
     def test_lfw(self, model):
         # First we get all pair comparisons with the list of labels
@@ -34,8 +36,10 @@ class LFWTester(object):
 
         comparisons_by_layers = {}
 
-        for im1_path, im2_path, label in self.__labeled_pairs_list:
+        for (im1_path, im2_path, label) in tqdm(self.__labeled_pairs_list, desc='lfw'):
             labels_list.append(label)
+            im1_path = os.path.join(self.__lfw_dir, im1_path)
+            im2_path = os.path.join(self.__lfw_dir, im2_path)
 
             im1 = self.__image_loader.load_image(im1_path)
             im2 = self.__image_loader.load_image(im2_path)
@@ -49,6 +53,6 @@ class LFWTester(object):
             for key in comparison:
                 if key not in comparisons_by_layers:
                     comparisons_by_layers[key] = []
-                comparisons_by_layers.append(comparison[key])
+                comparisons_by_layers[key].append(comparison[key])
 
         return comparisons_by_layers, labels_list

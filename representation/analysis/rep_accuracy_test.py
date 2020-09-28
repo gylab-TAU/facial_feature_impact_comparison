@@ -6,12 +6,12 @@ class RepAccuracyTester(object):
         self.__threshold_matching = threshold_matching
 
     def calc_accuracy(self, y_scores, y_true):
-        y_score = np.asarray(y_scores)
+        y_scores = np.asarray(y_scores)
         y_true = np.asarray(y_true)
         best_acc = 0
         best_threshold = 0
-        for i in range(len(y_score)):
-            threshold = y_score[i]
+        for i in range(len(y_scores)):
+            threshold = y_scores[i]
             y_test = self.__threshold_matching.get_matching(y_scores, threshold)
             acc = np.mean((y_test == y_true).astype(int))
             if acc > best_acc:

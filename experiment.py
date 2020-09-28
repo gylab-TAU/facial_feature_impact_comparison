@@ -9,7 +9,7 @@ from dataloaders_setup import dataloaders_setup
 from trainer_setup import get_trainer
 
 if __name__ == '__main__':
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
     config.read(CONFIG_PATH)
 
     im_size = int(config['DATASET']['image_size'])
@@ -29,8 +29,8 @@ if __name__ == '__main__':
                                   config['GENERAL']['root_dir'],
                                   config['GENERAL']['experiment_name'])
 
-    start_epoch = config['MODELLING']['start_epoch']
-    end_epoch = config['MODELLING']['end_epoch']
+    start_epoch = int(config['MODELLING']['start_epoch'])
+    end_epoch = int(config['MODELLING']['end_epoch'])
 
     trainer = get_trainer(config, num_classes, start_epoch)
 
@@ -38,5 +38,5 @@ if __name__ == '__main__':
 
     lfw_tester = get_lfw_test(config, image_loader)
 
-    lfw_tester.test_lfw(trainer.model)
+    print(lfw_tester.test_lfw(trainer.model))
 

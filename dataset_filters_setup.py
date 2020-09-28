@@ -23,7 +23,7 @@ def phase_size_filter_setup(config):
 
     class_filter_dataset_dir = config['DATASET']['class_filter_dataset_dir']
     class_size_filter_output_dir = os.path.join(config['DATASET']['processed_dataset_root'],
-                                                f'{class_filter_dataset_dir}_{str(phase_size_dict)}')
+                                                class_filter_dataset_dir)
 
     return DatasetSizeFilter(class_size_filter_output_dir, phase_size_dict)
 
@@ -32,7 +32,7 @@ def class_num_filter_setup(config):
     class_num_filter_output_dir = os.path.join(config['DATASET']['processed_dataset_root'],
                                                config['DATASET']['dataset_size_filter_dir'])
 
-    max_num_classes = config['DATASET']['max_num_classes']
-    min_num_classes = config['DATASET']['min_num_classes']
+    max_num_classes = int(config['DATASET']['max_num_classes'])
+    min_num_classes = int(config['DATASET']['min_num_classes'])
 
     return NumClassFilter(min_num_classes, max_num_classes, class_num_filter_output_dir)

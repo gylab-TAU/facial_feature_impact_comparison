@@ -1,6 +1,7 @@
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from PIL import Image
+import torch
 
 
 class ImageLoader(object):
@@ -13,7 +14,7 @@ class ImageLoader(object):
                 normalize,
             ])
         self.random_crop_tt = transforms.Compose([
-                transforms.RandomResizedCrop(self.im_size),
+                transforms.RandomResizedCrop(im_size),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 normalize,
@@ -39,4 +40,6 @@ class ImageLoader(object):
         im1t = tt(im1)
         im1t = im1t.unsqueeze(0)
 
+        if torch.cuda.is_available():
+            im1t = im1t.cuda()
         return im1t

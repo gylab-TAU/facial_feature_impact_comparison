@@ -11,10 +11,10 @@ class TrainerFactory(object):
 
     def get_trainer(self, arch, optimizer_name, criterion_name, lr_scheduler_name, is_pretrained, num_classes, checkpoint=None, epoch=0):
         model = self.model_initializer.get_model(arch, is_pretrained, num_classes)
-        criterion = self.criterion_initailizer.get_criterion(criterion_name)
-        optimizer = self.optimizer_initializer.get_optimizer(optimizer_name)
+        criterion = self.criterion_initializer.get_criterion(criterion_name)
+        optimizer = self.optimizer_initializer.get_optimizer(optimizer_name, model)
         lr_scheduler = self.lr_scheduler_initializer.get_scheduler(lr_scheduler_name, optimizer, epoch)
-
+        acc = 0
         if checkpoint is not None:
             model, optimizer, acc, epoch = self.model_store.load_model_and_optimizer_loc(model, optimizer, checkpoint)
         elif epoch != 0:

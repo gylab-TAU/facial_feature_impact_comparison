@@ -8,7 +8,8 @@ class LocalModelStore(object):
 
     def save_model(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer, epoch: int, acc: float, is_best: bool):
         path = self.__get_model_path(self.__get_model_filename(epoch, is_best))
-        with open(path, 'w') as f:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'bw') as f:
             torch.save({
                 'epoch': epoch + 1,
                 'state_dict': model.state_dict(),
