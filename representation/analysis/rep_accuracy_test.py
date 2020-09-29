@@ -5,7 +5,7 @@ class RepAccuracyTester(object):
     def __init__(self, threshold_matching):
         self.__threshold_matching = threshold_matching
 
-    def calc_accuracy(self, y_scores, y_true):
+    def calc_performance(self, y_scores, y_true):
         y_scores = np.asarray(y_scores)
         y_true = np.asarray(y_true)
         best_acc = 0

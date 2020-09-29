@@ -4,7 +4,7 @@ from data_prep.util import transfer_datapoints
 import numpy as np
 
 
-class NumClassFilter(object):
+class NumClassProcessor(object):
     def __init__(self, min_class, max_class, output_dataset_dir, class_name_filter=os.path.join('*', '*'), data_name_filter='*'):
         self.__min_num_classes = min_class
         self.__max_num_classes = max_class

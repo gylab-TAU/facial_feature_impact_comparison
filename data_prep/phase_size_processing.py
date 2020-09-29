@@ -4,7 +4,7 @@ from data_prep.util import transfer_datapoints
 import numpy as np
 
 
-class DatasetSizeFilter(object):
+class PhaseSizeProcessor(object):
     """
     A setup object, taking a raw dataset and filtering it according to constant phase size
     """

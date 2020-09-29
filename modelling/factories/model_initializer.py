@@ -1,7 +1,7 @@
 import torchvision
 import torchvision.models as models
 import torch
-from .trainer import Trainer
+from modelling.trainer import Trainer
 
 
 class ModelInitializer(object):

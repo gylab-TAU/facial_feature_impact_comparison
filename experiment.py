@@ -3,10 +3,10 @@ import configparser
 import json
 from data_prep.image_loader import ImageLoader
 from modelling.local_model_store import LocalModelStore
-from lfw_test_setup import get_lfw_test
-from dataset_filters_setup import setup_dataset_filter
-from dataloaders_setup import dataloaders_setup
-from trainer_setup import get_trainer
+from experiment_setup.lfw_test_setup import get_lfw_test
+from experiment_setup.dataset_filters_setup import setup_dataset_filter
+from experiment_setup.dataloaders_setup import dataloaders_setup
+from experiment_setup.trainer_setup import get_trainer
 
 if __name__ == '__main__':
     config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())

@@ -1,13 +1,12 @@
-from representation.raw_model_layers_dict import get_model_layers_dict
-from representation.representation_extraction import RepresentationExtractor
-from representation.representation_save_hook import FileSystemHook
+from representation.acquisition.raw_model_layers_dict import get_model_layers_dict
+from representation.acquisition.representation_extraction import RepresentationExtractor
+from representation.acquisition.representation_save_hook import FileSystemHook
 from representation.analysis.datapoints_rep_compare import DatapointsRepComparer
 from representation.analysis.euclidian_distance_compare import EuclidianDistanceCompare
 import torchvision
-import numpy as np
 import os
 import torchvision.transforms as transforms
-from PIL import Image, ImageOps
+from PIL import Image
 import pickle
 
 

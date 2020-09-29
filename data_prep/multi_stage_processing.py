@@ -1,7 +1,7 @@
 import os
 
 
-class MultiStageFilter(object):
+class MultiStageProcessor(object):
     def __init__(self, ordered_filters):
         self.__filters = ordered_filters
 

@@ -1,4 +1,4 @@
-from representation.setup_model_hooks import setup_model_hooks
+from representation.acquisition.setup_model_hooks import setup_model_hooks
 import torch
 
 

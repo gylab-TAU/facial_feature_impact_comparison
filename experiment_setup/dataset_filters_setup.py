@@ -1,8 +1,8 @@
 import json
 import os
-from data_prep.num_class_filter import NumClassFilter
-from data_prep.filter_dataset import DatasetSizeFilter
-from data_prep.multi_stage_filter import MultiStageFilter
+from data_prep.num_classes_processing import NumClassProcessor
+from data_prep.phase_size_processing import PhaseSizeProcessor
+from data_prep.multi_stage_processing import MultiStageProcessor
 
 
 def setup_dataset_filter(config):
@@ -15,7 +15,7 @@ def setup_dataset_filter(config):
             filter_list.append(class_num_filter_setup(config))
 
     if len(filter_list) > 0:
-        return MultiStageFilter(filter_list)
+        return MultiStageProcessor(filter_list)
 
 
 def phase_size_filter_setup(config):
@@ -25,7 +25,7 @@ def phase_size_filter_setup(config):
     class_size_filter_output_dir = os.path.join(config['DATASET']['processed_dataset_root'],
                                                 class_filter_dataset_dir)
 
-    return DatasetSizeFilter(class_size_filter_output_dir, phase_size_dict)
+    return PhaseSizeProcessor(class_size_filter_output_dir, phase_size_dict)
 
 
 def class_num_filter_setup(config):
@@ -35,4 +35,4 @@ def class_num_filter_setup(config):
     max_num_classes = int(config['DATASET']['max_num_classes'])
     min_num_classes = int(config['DATASET']['min_num_classes'])
 
-    return NumClassFilter(min_num_classes, max_num_classes, class_num_filter_output_dir)
+    return NumClassProcessor(min_num_classes, max_num_classes, class_num_filter_output_dir)
