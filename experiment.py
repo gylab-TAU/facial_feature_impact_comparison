@@ -38,5 +38,5 @@ if __name__ == '__main__':
 
     lfw_tester = get_lfw_test(config, image_loader)
 
-    print(lfw_tester.test_lfw(trainer.model))
+    print(lfw_tester.test_performance(trainer.model))
 

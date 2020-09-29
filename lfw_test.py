@@ -16,7 +16,7 @@ class LFWTester(object):
         self.__comparison_calc = comparison_calc
         self.__lfw_dir = lfw_dir
 
-    def test_lfw(self, model):
+    def test_performance(self, model):
         # First we get all pair comparisons with the list of labels
         comparisons_by_layers, labels_list = self.__get_comparison_bey_layers(model)
 
