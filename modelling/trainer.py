@@ -20,10 +20,13 @@ class Trainer(object):
 
     def train_model(self, start_epoch, end_epoch, data_loaders):
         for epoch in range(start_epoch, end_epoch):
+            print(f'Epoch: {epoch}')
 
             # modelling for one epoch
-            self.__per_phase(epoch, const.TRAIN_PHASE, data_loaders)
+            phase_loss, phase_acc = self.__per_phase(epoch, const.TRAIN_PHASE, data_loaders)
+            print(phase_loss, phase_acc)
             phase_loss, phase_acc = self.__per_phase(epoch, const.VAL_PHASE, data_loaders)
+            print(phase_loss, phase_acc)
 
             self.__lr_scheduler.step()
 
@@ -36,6 +39,8 @@ class Trainer(object):
             if self.__should_test(epoch):
                 perf = self.__test_performance()
                 if perf is not None:
+                    print (f'Done in {epoch} epochs')
+                    print(perf)
                     return perf
 
     def __test_performance(self):
@@ -44,6 +49,7 @@ class Trainer(object):
         for layer in performance:
             accuracy = performance[layer][0]
             threshold = performance[layer][1]
+            print (accuracy, threshold)
             if performance[layer][0] > self.__performance_threshold:
                 return layer, accuracy, threshold
 
@@ -67,31 +73,35 @@ class Trainer(object):
             phase_size = len(data_loaders[phase].sampler.indices)
         else:
             phase_size = len(data_loaders[phase].dataset)
-
+        batch_size = phase_size // len(data_loaders[phase])
         phase_loss = 0
         phase_acc = 0
-        num_batches = 0
+        num_batches = len(data_loaders[phase])
+        if 0 < self.__num_batches_per_epoch_limit < num_batches:
+            num_batches = self.__num_batches_per_epoch_limit
+            phase_size = batch_size*num_batches
 
         # switch to modelling mode
         self.model.train(phase == const.TRAIN_PHASE)
-
         with torch.set_grad_enabled(phase == const.TRAIN_PHASE):
-            for (images, target) in tqdm(data_loaders[phase], desc=phase):
+            data_loader_iter = iter(data_loaders[phase])
+            for i in tqdm(range(num_batches), desc=phase):
+                (images, target) = next(data_loader_iter)
 
                 batch_loss, batch_acc = self.__per_batch(images, target)
-                phase_loss += batch_loss / phase_size
-                phase_acc += batch_acc.item() / phase_size
-
-                if 0 < num_batches >= self.__num_batches_per_epoch_limit:
-                    break
+                # print(batch_loss, batch_acc.item())
+                if batch_loss >= 10:
+                    # I once got a batchloss = Inf so I added this print to give a heads up
+                    print ('batch_loss >= 10', batch_loss)
+                phase_loss += batch_loss / num_batches
+                phase_acc += batch_acc / phase_size
 
         return phase_loss, phase_acc
 
     def __per_batch(self, images, target):
         if torch.cuda.is_available():
-            # TODO: Need to test this modification. before it used to check if GPU is not None. Why?
-            images = images.cuda(non_blocking=True)
-            target = target.cuda(non_blocking=True)
+            images = images.cuda(non_blocking=False)
+            target = target.cuda(non_blocking=False)
 
         # compute output
         output = self.model(images)
@@ -104,4 +114,4 @@ class Trainer(object):
             loss.backward()
             self.__optimizer.step()
 
-        return loss.data.item(), torch.sum(preds == target.data)
+        return loss.data.item(), torch.sum(preds == target.data).item()

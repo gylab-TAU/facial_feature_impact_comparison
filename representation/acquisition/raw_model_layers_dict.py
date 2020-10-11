@@ -11,6 +11,6 @@ def get_model_layers_dict(model: torch.nn.Module):
     """
     layers_dict = {}
     for i, layer in enumerate(model.modules()):
-        if type(layer) != torch.nn.modules.container.Sequential:
+        if type(layer) != torch.nn.modules.container.Sequential and type(layer) != torch.nn.parallel.DataParallel:
             layers_dict[layer] = i
     return layers_dict

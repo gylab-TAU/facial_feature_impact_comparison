@@ -6,7 +6,10 @@ class PerformanceTester(object):
 
     def test_performance(self, model, dataset_dir, pairs_list, labels_list, progress_label):
         # First we get all pair comparisons with the list of labels
-        comparisons_by_layers = self.__pairs_list_comparison.compare_pairs(model, dataset_dir, pairs_list, progress_label)
+        comparisons_by_layers, bad_indexes = self.__pairs_list_comparison.compare_pairs(model, dataset_dir, pairs_list, progress_label)
+
+        for i in bad_indexes:
+            del labels_list[i]
 
         # Then, per layer we calculate the layer's accuracies
         reduced_performance = {}

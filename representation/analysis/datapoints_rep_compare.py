@@ -10,7 +10,7 @@ class DatapointsRepComparer(object):
         point2_rep = self.__representation_extractor.get_layers_representation(point2, point2_key)
 
         comparisons = {}
-        point1
+        # point1
         for key in point1_rep:
             comparisons[key] = self.__comparison.compare(rep1=point1_rep[key].cpu().numpy(), rep2=point2_rep[key].cpu().numpy())
 

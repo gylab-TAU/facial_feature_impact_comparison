@@ -5,6 +5,7 @@ from representation.analysis.pairs_list_compare import PairsListComparison
 from representation.analysis.rep_accuracy_test import RepAccuracyTester
 from representation.analysis.l2_threshold_matching import L2ThresholdMatching
 from representation.analysis.performance_tester import PerformanceTester
+from representation.acquisition.rep_layer_model_dict import get_model_layers_dict
 
 
 def get_lfw_test(config, image_loader):
@@ -26,7 +27,7 @@ def get_lfw_test(config, image_loader):
         comparison_calc = EuclidianDistanceCompare()
         threshold_matcher = L2ThresholdMatching()
 
-    pairs_list_comparison = PairsListComparison(reps_cache_path, image_loader, comparison_calc)
+    pairs_list_comparison = PairsListComparison(reps_cache_path, image_loader, comparison_calc, get_model_layers_dict)
     performance_tester = PerformanceTester(RepAccuracyTester(threshold_matcher), pairs_list_comparison)
 
     return lfw_test.LFWTester(pairs_list, labels_list, config['LFW_TEST']['lfw_dir'], 'lfw', performance_tester)

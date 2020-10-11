@@ -31,6 +31,6 @@ class TrainerFactory(object):
                        self.model_store,
                        best_acc1=acc,
                        performance_tester=performance_tester,
-                       performance_threshold=performance_threshold,
+                       accuracy_threshold=performance_threshold,
                        num_epochs_to_test=num_epochs_to_test,
                        num_batches_per_epoch_limit=num_batches_per_epoch_limit)

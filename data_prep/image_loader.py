@@ -20,7 +20,10 @@ class ImageLoader(object):
                 normalize,
             ])
 
-    def load_dir(self, dir_path, center_crop=True):
+    # TODO: Add a load dir function
+    # TODO: Add a load order for debugging purposes
+    def load_dataset(self, dir_path, center_crop=True):
+        """Loads a dataset based on a specific structure (dataset/classes/images)"""
         if center_crop:
             return datasets.ImageFolder(dir_path, self.center_crop_tt)
         return datasets.ImageFolder(dir_path, self.random_crop_tt)

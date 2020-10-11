@@ -2,9 +2,8 @@ import numpy as np
 
 
 class MultiListRepresentationBehaviour(object):
-    def __init__(self, pairs_types_to_lists: dict, pairs_list_comparison, performance_tester, pairs_types_to_dir: dict, labels_dict=None):
+    def __init__(self, pairs_types_to_lists: dict, pairs_list_comparison, performance_tester, pairs_types_to_dir: dict):
         self.__pairs_types_to_lists = pairs_types_to_lists
-        self.__labels_dict = labels_dict
         self.__pairs_types_to_dir = pairs_types_to_dir
         self.__performance_tester = performance_tester
         self.__pairs_list_comparison = pairs_list_comparison
@@ -18,12 +17,10 @@ class MultiListRepresentationBehaviour(object):
                                                                                          self.__pairs_types_to_dir[pairs_type],
                                                                                          self.__pairs_types_to_lists[pairs_type],
                                                                                          pairs_type)
-            if self.__labels_dict is not None:
-                labels = self.__labels_dict[pairs_type]
-            overall_max = max(np.max(type_to_comparisons[pairs_type]), overall_max)
+            for layer in type_to_comparisons[pairs_type]:
+                overall_max = max(np.max(type_to_comparisons[pairs_type][layer]), overall_max)
 
-            type_to_perf[pairs_type] = self.__performance_tester.test_performance(type_to_comparisons[pairs_type],
-                                                                                  labels)
+            type_to_perf[pairs_type] = self.__performance_tester.test_performance(type_to_comparisons[pairs_type], None)
         return self.__normalize(type_to_perf, overall_max)
 
     def __normalize(self, type_to_perf: dict, overall_max: float):

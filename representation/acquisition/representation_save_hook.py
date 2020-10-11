@@ -7,10 +7,11 @@ class FileSystemHook(object):
     """
     A representation hook class, pickling the reps to the FS
     """
-    def __init__(self, layers_dict, root_dir):
+    def __init__(self, layers_dict, root_dir, delete_after_load=True):
         self.__layers_dict = layers_dict
         self.__root_dir = root_dir
         self.__filename = None
+        self.__delete_after_load = delete_after_load
 
     def set_data_point_key(self, key):
         """
@@ -72,6 +73,9 @@ class FileSystemHook(object):
                 rep = data['rep']
                 layer_id = data['layer']
                 representations[layer_id] = rep
+            if self.__delete_after_load:
+                os.remove(rep_path)
+        os.removedirs(self.__get_data_item_dir())
 
         return representations
 
@@ -82,6 +86,7 @@ class FileSystemHook(object):
         return os.path.join(self.__root_dir, self.__filename)
 
     def __get_rep_path(self, layer):
-        path = os.path.join(self.__get_data_item_dir(), f'{self.__layers_dict[layer]}_{str(layer)}.pkl')
+        layer_name = str(layer)
+        path = os.path.join(self.__get_data_item_dir(), f'{self.__layers_dict[layer]}_{layer_name}.pkl')
         os.makedirs(os.path.dirname(path),exist_ok=True)
         return path

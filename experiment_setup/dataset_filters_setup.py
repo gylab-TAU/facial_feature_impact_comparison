@@ -14,8 +14,7 @@ def setup_dataset_filter(config):
         elif filter_name in ['class_num']:
             filter_list.append(class_num_filter_setup(config))
 
-    if len(filter_list) > 0:
-        return MultiStageProcessor(filter_list)
+    return MultiStageProcessor(filter_list)
 
 
 def phase_size_filter_setup(config):

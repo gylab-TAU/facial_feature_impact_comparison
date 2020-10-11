@@ -15,19 +15,23 @@ class LocalModelStore(object):
                 'state_dict': model.state_dict(),
                 'acc': acc,
                 'optimizer': optimizer.state_dict()}, f)
+            if is_best:
+                self.save_model(model, optimizer, epoch, acc, False)
 
     def load_model_and_optimizer(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, epoch: int = 0):
         path = self.__get_model_path(self.__get_model_filename(epoch, epoch == 0))
         return self.load_model_and_optimizer_loc(model, optimizer=optimizer, model_location=path)
 
     def load_model_and_optimizer_loc(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, model_location=None):
-        with open(model_location, 'r') as f:
+        with open(model_location, 'br') as f:
             model_checkpoint = torch.load(f)
+            print(model.state_dict())
             model.load_state_dict(model_checkpoint['state_dict'])
+            print(model.state_dict())
             if optimizer is not None:
                 optimizer.load_state_dict(model_checkpoint['optimizer'])
 
-        return model, optimizer, model_checkpoint['acc']
+        return model, optimizer, model_checkpoint['acc'], model_checkpoint['epoch']
 
     def __get_model_filename(self, epoch, is_best):
         if is_best:

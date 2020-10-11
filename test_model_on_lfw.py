@@ -9,6 +9,7 @@ from experiment_setup.dataset_filters_setup import setup_dataset_filter
 from experiment_setup.dataloaders_setup import dataloaders_setup
 from experiment_setup.trainer_setup import get_trainer
 from experiment_setup.pairs_behaviour_setup import setup_pairs_reps_behaviour
+from data_prep.dlib_aligner_image_loader import DlibAlignerImageLoader
 
 if __name__ == '__main__':
     config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     im_size = int(config['DATASET']['image_size'])
     dataset_means = json.loads(config['DATASET']['dataset_means'])
     dataset_stds = json.loads(config['DATASET']['dataset_stds'])
-    image_loader = ImageLoader(im_size, dataset_means, dataset_stds)
+    image_loader = DlibAlignerImageLoader(im_size, dataset_means, dataset_stds)
 
     filter = setup_dataset_filter(config)
 
@@ -38,7 +39,7 @@ if __name__ == '__main__':
 
     trainer = get_trainer(config, num_classes, start_epoch, lfw_tester)
 
-    trainer.train_model(start_epoch, end_epoch, dataloaders)
+    # trainer.train_model(start_epoch, end_epoch, dataloaders)
 
     print(lfw_tester.test_performance(trainer.model))
 

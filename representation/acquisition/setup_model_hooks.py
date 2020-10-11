@@ -9,10 +9,11 @@ def setup_model_hooks(model: torch.nn.Module, hook, layers_dict):
     :param layers_dict: { layer_object : layer_index_in_the_model}
     :return: the hooked model
     """
+    removeable_handles_list = []
     for layer in model.modules():
         if layer in layers_dict:
             if type(layer) == type(model):
-                layer.register_forward_hook(lambda model_layer, inp, output: hook.save_model_io(model_layer, inp, output))
+                removeable_handles_list.append(layer.register_forward_hook(lambda model_layer, inp, output: hook.save_model_io(model_layer, inp, output)))
             else:
-                layer.register_forward_hook(lambda model_layer, inp, output: hook.save(model_layer, inp, output))
-    return model
+                removeable_handles_list.append(layer.register_forward_hook(lambda model_layer, inp, output: hook.save(model_layer, inp, output)))
+    return removeable_handles_list

@@ -10,7 +10,7 @@ class RepresentationExtractor(object):
         self.model = model
         self.model_layers_dict = model_layer_dict
         self.representation_hook = representation_hook
-        setup_model_hooks(model, representation_hook, model_layer_dict)
+        self.removable_hooks = setup_model_hooks(model, representation_hook, model_layer_dict)
 
     def get_layers_representation(self, data_point: torch.Tensor, data_point_key):
         self.save_layers_representation(data_point, data_point_key)
@@ -21,3 +21,7 @@ class RepresentationExtractor(object):
         self.representation_hook.set_data_point_key(data_point_key)
         if not self.representation_hook.exists():
             self.model(data_point)
+
+    def __del__(self):
+        for hook in self.removable_hooks:
+            hook.remove()

@@ -7,4 +7,4 @@ class LRSchedulerInitializer(object):
         self.__gamma = gamma
 
     def get_scheduler(self, scheduler_name, optimizer, last_epoch):
-        return optim.lr_scheduler.StepLR(optimizer, self.__step, last_epoch)
+        return optim.lr_scheduler.StepLR(optimizer, self.__step, gamma=self.__gamma, last_epoch=last_epoch-1)

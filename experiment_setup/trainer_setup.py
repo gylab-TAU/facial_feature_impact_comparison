@@ -11,7 +11,9 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
     model_store = LocalModelStore(config['MODELLING']['architecture'],
                                   config['GENERAL']['experiment_name'],
                                   config['GENERAL']['root_dir'])
-
+    checkpoint_path = config['MODELLING']['checkpoint_path']
+    if checkpoint_path == '':
+        checkpoint_path = None
     trainer_factory = TrainerFactory(
         ModelInitializer(json.loads(config['MODELLING']['feature_parallelized_architectures'])),
         CrossEntropyCriterionInitializer(),
@@ -22,7 +24,7 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
                                float(config['OPTIMIZING']['gamma'])),
         model_store)
 
-    if 'performance_test' in config['MODELLING']:
+    if perf_tester is not None:
         perf_threshold = float(config['MODELLING']['perf_threshold'])
         num_epochs_to_test = int(config['MODELLING']['num_epochs_to_test'])
         num_batches_per_epoch_limit = int(config['MODELLING']['num_batches_per_epoch_limit'])
@@ -33,6 +35,7 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
                                           config['OPTIMIZING']['lr_scheduler'],
                                           bool(config['MODELLING']['is_pretrained']),
                                           num_classes, epoch=start_epoch,
+                                          checkpoint=checkpoint_path,
                                           performance_tester=perf_tester,
                                           performance_threshold=perf_threshold,
                                           num_epochs_to_test=num_epochs_to_test,
