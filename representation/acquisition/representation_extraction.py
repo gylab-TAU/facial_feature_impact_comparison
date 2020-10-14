@@ -20,7 +20,9 @@ class RepresentationExtractor(object):
     def save_layers_representation(self, data_point: torch.Tensor, data_point_key):
         self.representation_hook.set_data_point_key(data_point_key)
         if not self.representation_hook.exists():
-            self.model(data_point)
+            self.model.eval()
+            with torch.no_grad():
+                self.model(data_point)
 
     def __del__(self):
         for hook in self.removable_hooks:

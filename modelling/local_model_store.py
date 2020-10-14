@@ -18,8 +18,8 @@ class LocalModelStore(object):
             if is_best:
                 self.save_model(model, optimizer, epoch, acc, False)
 
-    def load_model_and_optimizer(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, epoch: int = 0):
-        path = self.__get_model_path(self.__get_model_filename(epoch, epoch == 0))
+    def load_model_and_optimizer(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, epoch: int = -1):
+        path = self.__get_model_path(self.__get_model_filename(epoch, epoch == -1))
         return self.load_model_and_optimizer_loc(model, optimizer=optimizer, model_location=path)
 
     def load_model_and_optimizer_loc(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, model_location=None):

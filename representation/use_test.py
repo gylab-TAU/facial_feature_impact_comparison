@@ -1,8 +1,8 @@
-from representation.acquisition.raw_model_layers_dict import get_model_layers_dict
+from representation.acquisition.model_layer_dicts.raw_model_layers_dict import get_model_layers_dict
 from representation.acquisition.representation_extraction import RepresentationExtractor
 from representation.acquisition.representation_save_hook import FileSystemHook
 from representation.analysis.datapoints_rep_compare import DatapointsRepComparer
-from representation.analysis.euclidian_distance_compare import EuclidianDistanceCompare
+from representation.analysis.metrics.euclidian_distance_compare import EuclidianDistanceCompare
 import torchvision
 import os
 import torchvision.transforms as transforms

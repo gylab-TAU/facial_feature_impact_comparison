@@ -6,7 +6,7 @@ import os.path
 from tqdm import tqdm
 
 
-class PairsListComparer(object):
+class LayersReducedPairsListComparer(object):
     def __init__(self, reps_cache_path, image_loader, comparison_calc, get_layers_dict):
         self.__reps_cache_path = reps_cache_path
         self.__image_loader = image_loader
@@ -19,7 +19,7 @@ class PairsListComparer(object):
                                      self.__get_layers_dict(model),
                                      FileSystemHook(self.__get_layers_dict(model), self.__reps_cache_path))
 
-        comparisons_by_pairs = {}
+        comparisons_by_layers = {}
 
         for i in tqdm(range(len(pairs_list)), desc=progress_label):
             try:
@@ -42,11 +42,14 @@ class PairsListComparer(object):
                 comp = DatapointsRepComparer(representation_extractor=re, comparison=self.__comparison_calc)
                 comparison = comp.compare_datapoints(im1_key, im2_key, im1, im2)
 
-                comparisons_by_pairs[(pairs_list[i][0], pairs_list[i][1])] = comparison
+                for key in comparison:
+                    if key not in comparisons_by_layers:
+                        comparisons_by_layers[key] = []
+                    comparisons_by_layers[key].append(comparison[key])
             except:
                 print(f'Error on {im1_path}, {im2_path}')
                 bad_indexes.append(i)
 
         del re
 
-        return comparisons_by_pairs, bad_indexes
+        return comparisons_by_layers, bad_indexes
