@@ -5,16 +5,16 @@ import torch
 
 
 class ImageLoader(object):
-    def __init__(self, im_size, dataset_mean, dataset_std):
+    def __init__(self, im_size, post_crop_size, dataset_mean, dataset_std):
         normalize = transforms.Normalize(dataset_mean, dataset_std)
         self.center_crop_tt = transforms.Compose([
                 transforms.Resize(im_size),
-                transforms.CenterCrop(im_size),
+                transforms.CenterCrop(post_crop_size),
                 transforms.ToTensor(),
                 normalize,
             ])
         self.random_crop_tt = transforms.Compose([
-                transforms.RandomResizedCrop(im_size),
+                transforms.RandomResizedCrop(post_crop_size),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 normalize,

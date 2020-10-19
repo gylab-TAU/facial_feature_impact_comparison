@@ -9,6 +9,8 @@ class PerformanceTester(object):
         working_labels_list = labels_list.copy()
         comparisons_by_layers, bad_indexes = self.__pairs_list_comparison.compare_pairs(model, dataset_dir, pairs_list, progress_label)
 
+        # reverse the delete order so as not to mix up the results indexing
+        bad_indexes.sort(reverse=True)
         for i in bad_indexes:
             del working_labels_list[i]
 

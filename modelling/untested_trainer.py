@@ -32,7 +32,7 @@ class UntestedTrainer(object):
 
             self.__model_store.save_model(self.model, self.__optimizer, epoch, self.__best_acc1, is_best)
 
-            return phase_acc
+        return phase_acc
 
     def __per_phase(self, epoch, phase, data_loaders):
         # batch_time, losses, top1, top5, data_time, progress = get_epoch_meters(self.train_loader, epoch)

@@ -17,7 +17,7 @@ if __name__ == '__main__':
     im_size = int(config['DATASET']['image_size'])
     dataset_means = json.loads(config['DATASET']['dataset_means'])
     dataset_stds = json.loads(config['DATASET']['dataset_stds'])
-    image_loader = ImageLoader(im_size, dataset_means, dataset_stds)
+    image_loader = ImageLoader(im_size, im_size, dataset_means, dataset_stds)
 
     filter = setup_dataset_filter(config)
 
