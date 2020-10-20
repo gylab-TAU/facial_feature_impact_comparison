@@ -3,6 +3,7 @@ import os
 from data_prep.num_classes_processing import NumClassProcessor
 from data_prep.phase_size_processing import PhaseSizeProcessor
 from data_prep.multi_stage_processing import MultiStageProcessor
+from data_prep.mtcnn_align_processing import MTCNNAlignProcessor
 
 
 def setup_dataset_filter(config):
@@ -25,6 +26,15 @@ def phase_size_filter_setup(config):
                                                 class_filter_dataset_dir)
 
     return PhaseSizeProcessor(class_size_filter_output_dir, phase_size_dict)
+
+
+def mtcnn_align_filter_setup(config):
+    mtcnn_align_dim = config['DATASET']['mtcnn_align_image_dim']
+    mtcnn_align_margin = config['DATASET']['mtcnn_align_margin']
+
+    processed_dataset_root = config['DATASET']['processed_dataset_root']
+
+    return MTCNNAlignProcessor(image_size=mtcnn_align_dim, margin=mtcnn_align_margin, output_dataset_dir=processed_dataset_root)
 
 
 def class_num_filter_setup(config):

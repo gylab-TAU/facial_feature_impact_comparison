@@ -16,8 +16,6 @@ class PerformanceTester(object):
             for i in bad_indexes:
                 del working_labels_list[i]
 
-            # comparisons_df['labels'] = working_labels_list
-
         # Then, per layer we calculate the layer's accuracies
         reduced_performance = {}
         for key in comparisons_df.columns:

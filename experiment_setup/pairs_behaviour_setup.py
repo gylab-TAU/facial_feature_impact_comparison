@@ -1,15 +1,9 @@
 import json
 import os
 from representation.analysis.metrics.euclidian_distance_compare import EuclidianDistanceCompare
-from representation.analysis.layers_reduced_pairs_list_compare import LayersReducedPairsListComparer
-from representation.analysis.input_comparisons_performance_tester import InputComparisonsPerformanceTester
-from multi_list_rep_behaviour import MultiListRepresentationBehaviour
-from representation.analysis.metrics.normalized_rep_average import NormalizedRepAverage
-from representation.analysis.metrics.pref_test_stub import PerformanceTestStub
-# from representation.acquisition.model_layer_dicts.fc_conv_layers_model_dict import get_model_layers_dict
 from representation.analysis.pairs_list_compare import PairsListComparer
 from representation.acquisition.model_layer_dicts.blauch_equivalent_list_model_dict import get_model_layers_dict
-# from representation.acquisition.raw_model_layers_dict import get_model_layers_dict
+from representation.analysis.multi_list_comparer import MultiListComparer
 
 def setup_pairs_reps_behaviour(config, image_loader):
     if 'REP_BEHAVIOUR' not in config:
@@ -31,11 +25,6 @@ def setup_pairs_reps_behaviour(config, image_loader):
     if config['REP_BEHAVIOUR']['comparison_metric'] == 'l2' or config['REP_BEHAVIOUR']['comparison_metric'] == 'euclidian':
         comparison_calc = EuclidianDistanceCompare()
 
-    if config['REP_BEHAVIOUR']['reduce_performance'] == 'True':
-        pairs_list_comparison = LayersReducedPairsListComparer(reps_cache_path, image_loader, comparison_calc, get_model_layers_dict)
-        performance_tester = InputComparisonsPerformanceTester(NormalizedRepAverage())
-    else:
-        pairs_list_comparison = PairsListComparer(reps_cache_path, image_loader, comparison_calc, get_model_layers_dict)
-        performance_tester = InputComparisonsPerformanceTester(PerformanceTestStub())
+    pairs_list_comparison = PairsListComparer(reps_cache_path, image_loader, comparison_calc, get_model_layers_dict)
 
-    return MultiListRepresentationBehaviour(pairs_types_to_lists, pairs_list_comparison, performance_tester, pairs_image_dirs)
+    return MultiListComparer(pairs_types_to_lists, pairs_image_dirs, pairs_list_comparison)

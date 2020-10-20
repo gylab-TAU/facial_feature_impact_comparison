@@ -44,7 +44,6 @@ class PairsListComparer(object):
                 comparison = comp.compare_datapoints(im1_key, im2_key, im1, im2)
 
                 comparison_df_row = pd.DataFrame({(pairs_list[i][0], pairs_list[i][1]): comparison}).transpose()
-                comparison_df_row['type'] = progress_label
 
                 if comparisons_df is None:
                     comparisons_df = comparison_df_row
