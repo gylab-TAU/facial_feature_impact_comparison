@@ -2,6 +2,7 @@ from representation.analysis.datapoints_rep_compare import DatapointsRepComparer
 from representation.acquisition.representation_save_hook import FileSystemHook
 from representation.acquisition.representation_extraction import RepresentationExtractor
 
+import pandas as pd
 import os.path
 from tqdm import tqdm
 
@@ -19,7 +20,7 @@ class PairsListComparer(object):
                                      self.__get_layers_dict(model),
                                      FileSystemHook(self.__get_layers_dict(model), self.__reps_cache_path))
 
-        comparisons_by_pairs = {}
+        comparisons_df = None
 
         for i in tqdm(range(len(pairs_list)), desc=progress_label):
             try:
@@ -42,11 +43,17 @@ class PairsListComparer(object):
                 comp = DatapointsRepComparer(representation_extractor=re, comparison=self.__comparison_calc)
                 comparison = comp.compare_datapoints(im1_key, im2_key, im1, im2)
 
-                comparisons_by_pairs[(pairs_list[i][0], pairs_list[i][1])] = comparison
+                comparison_df_row = pd.DataFrame({(pairs_list[i][0], pairs_list[i][1]): comparison}).transpose()
+                comparison_df_row['type'] = progress_label
+
+                if comparisons_df is None:
+                    comparisons_df = comparison_df_row
+                else:
+                    comparisons_df.append(comparison_df_row)
             except:
                 print(f'Error on {im1_path}, {im2_path}')
                 bad_indexes.append(i)
 
         del re
 
-        return comparisons_by_pairs, bad_indexes
+        return comparisons_df, bad_indexes
