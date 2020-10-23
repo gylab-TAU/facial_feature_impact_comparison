@@ -1,6 +1,7 @@
 import pandas as pd
 import const
 
+
 class PerformanceLogger(object):
     def __init__(self, log_path: str):
         self.__performance_log = pd.DataFrame(columns=[const.EPOCH, const.LAYER])

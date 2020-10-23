@@ -29,32 +29,33 @@ class CustomTestTrainer(object):
             phase_loss, phase_acc = self.__per_phase(epoch, const.VAL_PHASE, data_loaders)
             print(phase_loss, phase_acc)
 
-            self.__lr_scheduler.step()
-
             # remember best acc@1 and save checkpoint
             is_best = phase_acc > self.__best_acc1
             self.__best_acc1 = max(phase_acc, self.__best_acc1)
 
             self.__model_store.save_model(self.model, self.__optimizer, epoch, self.__best_acc1, is_best)
-            
+
+            test_acc = None
             if self.__should_test(epoch):
-                perf = self.__test_performance(epoch)
-                if perf is not None:
-                    print (f'Done in {epoch} epochs')
-                    print(perf)
-                    return perf
+                layer, acc, thresh = self.__test_performance(epoch)
+                test_acc = acc
+                if acc > self.__performance_threshold:
+                    print(f'Done in {epoch} epochs')
+                    print("test acc:", acc, " threshold val: ", thresh)
+                    return layer, acc, thresh
+
+            if type(self.__lr_scheduler) == torch.optim.lr_scheduler.ReduceLROnPlateau:
+                self.__lr_scheduler.step(test_acc)
+            else:
+                self.__lr_scheduler.step()
 
     def __test_performance(self, epoch):
         performance_df = self.__performance_tester.test_performance(self.model)
         self.__performance_logger.log_performance(epoch, performance_df)
-        for layer in performance_df.index:
-            accuracy = performance_df.loc[layer]['acc@1']
-            threshold = performance_df.loc[layer]['threshold']
-            print(accuracy, threshold)
-            if accuracy > self.__performance_threshold:
-                return layer, accuracy, threshold
-
-        return None
+        highest_acc = performance_df['acc@1'].max()
+        highest_acc_layer = performance_df['acc@1'].idxmax()
+        highest_acc_thresh = performance_df.loc[highest_acc_layer]['threshold']
+        return highest_acc_layer, highest_acc, highest_acc_thresh
 
     def __should_test(self, epoch):
         # If we have a way to test our performance
