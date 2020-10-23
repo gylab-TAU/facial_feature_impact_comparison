@@ -1,3 +1,5 @@
+import pandas as pd
+import const
 
 class PerformanceTester(object):
     def __init__(self, representation_performance_analyzer, pairs_list_comparison):
@@ -17,9 +19,13 @@ class PerformanceTester(object):
                 del working_labels_list[i]
 
         # Then, per layer we calculate the layer's accuracies
-        reduced_performance = {}
-        for key in comparisons_df.columns:
-            reduced_performance[key] = self.__rep_perf_analyzer.calc_performance(comparisons_df[key], working_labels_list)
+        columns = [const.LAYER] + self.__rep_perf_analyzer.get_metric_name()
+        reduced_performance_df = pd.DataFrame(columns=columns)
 
-        return reduced_performance
+        reduced_performance_df[const.LAYER] = comparisons_df.columns
+        reduced_performance_df = reduced_performance_df.set_index(const.LAYER)
+        for key in comparisons_df.columns:
+            reduced_performance_df.loc[key] = self.__rep_perf_analyzer.calc_performance(comparisons_df[key], working_labels_list)
+
+        return reduced_performance_df
 

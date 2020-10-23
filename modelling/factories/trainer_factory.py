@@ -1,4 +1,5 @@
 from modelling.custom_test_trainer import CustomTestTrainer
+from modelling.performance_logger_stub import PerformanceLoggerStub
 
 from modelling.standard_test_trainer import StandardTestTrainer
 from modelling.untested_trainer import UntestedTrainer
@@ -18,7 +19,8 @@ class TrainerFactory(object):
                     performance_tester=None,
                     performance_threshold=0,
                     num_epochs_to_test=None,
-                    num_batches_per_epoch_limit=0, test_type: str = 'None'):
+                    num_batches_per_epoch_limit=0, test_type: str = 'None',
+                    perf_logger=None):
         model = self.model_initializer.get_model(arch, is_pretrained, num_classes)
         criterion = self.criterion_initializer.get_criterion(criterion_name)
         optimizer = self.optimizer_initializer.get_optimizer(optimizer_name, model)
@@ -31,6 +33,9 @@ class TrainerFactory(object):
 
         lr_scheduler = self.lr_scheduler_initializer.get_scheduler(lr_scheduler_name, optimizer, epoch)
 
+        if perf_logger is None:
+            perf_logger = PerformanceLoggerStub()
+
         if test_type == 'LFW_TEST' and performance_tester != None:
             return CustomTestTrainer(model,
                                      criterion,
@@ -41,7 +46,8 @@ class TrainerFactory(object):
                                      performance_tester=performance_tester,
                                      accuracy_threshold=performance_threshold,
                                      num_epochs_to_test=num_epochs_to_test,
-                                     num_batches_per_epoch_limit=num_batches_per_epoch_limit)
+                                     num_batches_per_epoch_limit=num_batches_per_epoch_limit,
+                                     perf_logger=perf_logger)
 
         elif test_type == 'standard':
             return StandardTestTrainer(model,

@@ -5,6 +5,8 @@ from modelling.factories.criterion_initializer import CrossEntropyCriterionIniti
 from modelling.factories.optimizer_initializer import SGDOptimizerInitializer
 from modelling.factories.lr_scheduler_initializer import LRSchedulerInitializer
 from modelling.local_model_store import LocalModelStore
+from modelling.performance_logger import PerformanceLogger
+from modelling.performance_logger_stub import PerformanceLoggerStub
 
 
 def get_trainer(config, num_classes, start_epoch, perf_tester=None):
@@ -35,6 +37,8 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
         perf_threshold = float(config['MODELLING']['perf_threshold'])
         num_epochs_to_test = int(config['MODELLING']['num_epochs_to_test'])
 
+    perf_logger = get_performance_logger(config)
+
     trainer = trainer_factory.get_trainer(config['MODELLING']['architecture'],
                                           config['OPTIMIZING']['optimizer'],
                                           config['MODELLING']['criterion_name'],
@@ -45,8 +49,15 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
                                           performance_tester=perf_tester,
                                           performance_threshold=perf_threshold,
                                           num_epochs_to_test=num_epochs_to_test,
-                                          num_batches_per_epoch_limit=num_batches_per_epoch_limit, test_type=config['MODELLING']['performance_test'])
-
-
+                                          num_batches_per_epoch_limit=num_batches_per_epoch_limit,
+                                          test_type=config['MODELLING']['performance_test'],
+                                          perf_logger=perf_logger)
 
     return trainer
+
+
+def get_performance_logger(config):
+    if 'perf_log_path' in config['MODELLING']:
+        return PerformanceLogger(config['MODELLING']['perf_log_path'])
+    else:
+        return PerformanceLoggerStub()

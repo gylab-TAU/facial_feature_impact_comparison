@@ -20,3 +20,5 @@ class RepAccuracyTester(object):
 
         return best_acc, best_threshold
 
+    def get_metric_name(self) -> []:
+        return ['acc@1', 'threshold']

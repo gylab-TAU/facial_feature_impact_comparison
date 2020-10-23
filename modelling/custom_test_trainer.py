@@ -6,7 +6,7 @@ import const
 class CustomTestTrainer(object):
     def __init__(self, model, criterion, optimizer, lr_scheduler, model_store, best_acc1:float = 0,
                  performance_tester=None, accuracy_threshold=0, num_epochs_to_test=None,
-                 num_batches_per_epoch_limit=0):
+                 num_batches_per_epoch_limit=0, perf_logger=None):
         self.model = model
         self.__criterion = criterion
         self.__optimizer = optimizer
@@ -17,6 +17,7 @@ class CustomTestTrainer(object):
         self.__performance_threshold = accuracy_threshold
         self.__num_epochs_to_test = num_epochs_to_test
         self.__num_batches_per_epoch_limit = num_batches_per_epoch_limit
+        self.__performance_logger = perf_logger
 
     def train_model(self, start_epoch, end_epoch, data_loaders):
         for epoch in range(start_epoch, end_epoch):
@@ -37,20 +38,20 @@ class CustomTestTrainer(object):
             self.__model_store.save_model(self.model, self.__optimizer, epoch, self.__best_acc1, is_best)
             
             if self.__should_test(epoch):
-                perf = self.__test_performance()
+                perf = self.__test_performance(epoch)
                 if perf is not None:
                     print (f'Done in {epoch} epochs')
                     print(perf)
                     return perf
 
-    def __test_performance(self):
-        performance = self.__performance_tester.test_performance(self.model)
-
-        for layer in performance:
-            accuracy = performance[layer][0]
-            threshold = performance[layer][1]
-            print (accuracy, threshold)
-            if performance[layer][0] > self.__performance_threshold:
+    def __test_performance(self, epoch):
+        performance_df = self.__performance_tester.test_performance(self.model)
+        self.__performance_logger.log_performance(epoch, performance_df)
+        for layer in performance_df.index:
+            accuracy = performance_df.loc[layer]['acc@1']
+            threshold = performance_df.loc[layer]['threshold']
+            print(accuracy, threshold)
+            if accuracy > self.__performance_threshold:
                 return layer, accuracy, threshold
 
         return None

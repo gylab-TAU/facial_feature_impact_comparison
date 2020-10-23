@@ -5,3 +5,6 @@ TEST_PHASE = 'test'
 CONFIG_PATH = './experiment_config.cfg'
 
 LABELS_COL_NAME = 'labels'
+
+LAYER = 'layer'
+EPOCH = 'epoch'
