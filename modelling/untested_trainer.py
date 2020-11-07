@@ -61,8 +61,8 @@ class UntestedTrainer(object):
 
     def __per_batch(self, images, target):
         if torch.cuda.is_available():
-            images = images.cuda(non_blocking=False)
-            target = target.cuda(non_blocking=False)
+            images = images.cuda(non_blocking=True)
+            target = target.cuda(non_blocking=True)
 
         # compute output
         output = self.model(images)

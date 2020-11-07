@@ -22,20 +22,23 @@ class CustomTestTrainer(object):
         for epoch in range(start_epoch, end_epoch):
             print(f'Epoch: {epoch}')
 
+            print("lr before train: ", self.__lr_scheduler.get_last_lr())
             # modelling for one epoch
             phase_loss, phase_acc = self.__per_phase(epoch, const.TRAIN_PHASE, data_loaders)
             print(phase_loss, phase_acc)
             phase_loss, phase_acc = self.__per_phase(epoch, const.VAL_PHASE, data_loaders)
             print(phase_loss, phase_acc)
 
+            print("lr after train: ", self.__lr_scheduler.get_last_lr())
             self.__lr_scheduler.step()
+            print("lr after train and step: ", self.__lr_scheduler.get_last_lr())
 
             # remember best acc@1 and save checkpoint
             is_best = phase_acc > self.__best_acc1
             self.__best_acc1 = max(phase_acc, self.__best_acc1)
 
             self.__model_store.save_model(self.model, self.__optimizer, epoch, self.__best_acc1, is_best)
-            
+
             if self.__should_test(epoch):
                 perf = self.__test_performance()
                 if perf is not None:
@@ -49,7 +52,7 @@ class CustomTestTrainer(object):
         for layer in performance:
             accuracy = performance[layer][0]
             threshold = performance[layer][1]
-            print (accuracy, threshold)
+            print ("layer: ", layer, " accuracy: ", accuracy, " threshold: ", threshold)
             if performance[layer][0] > self.__performance_threshold:
                 return layer, accuracy, threshold
 

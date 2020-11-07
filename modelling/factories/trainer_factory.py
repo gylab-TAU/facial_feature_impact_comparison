@@ -32,6 +32,7 @@ class TrainerFactory(object):
         lr_scheduler = self.lr_scheduler_initializer.get_scheduler(lr_scheduler_name, optimizer, epoch)
 
         if test_type == 'LFW_TEST' and performance_tester != None:
+            print("running custom test training")
             return CustomTestTrainer(model,
                                      criterion,
                                      optimizer,
@@ -44,6 +45,7 @@ class TrainerFactory(object):
                                      num_batches_per_epoch_limit=num_batches_per_epoch_limit)
 
         elif test_type == 'standard':
+            print("running standard test training")
             return StandardTestTrainer(model,
                                        criterion,
                                        optimizer,
@@ -54,6 +56,7 @@ class TrainerFactory(object):
                                        num_epochs_to_test=num_epochs_to_test,
                                        num_batches_per_epoch_limit=num_batches_per_epoch_limit)
         else:
+            print("running training without test")
             return UntestedTrainer(model,
                                    criterion,
                                    optimizer,
