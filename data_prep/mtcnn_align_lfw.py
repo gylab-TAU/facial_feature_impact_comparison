@@ -6,13 +6,16 @@ import numpy as np
 import os
 
 if __name__ == '__main__':
-    src_dir = '/home/administrator/datasets/lfw_funneled'
-    dest_dir = '/home/administrator/datasets/mtcnn_aligned_lfw_funneled'
-    batch_size = 16
+    src_dir = r'/home/administrator/datasets/processed/test_for_unprocessed_mtcnn'
+    # src_dir = r'/home/administrator/ datasets / processed /frontal_resized'
+    dest_dir = r'/home/administrator/datasets/processed/test_for_unprocessed_mtcnn_dest'
+    # dest_dir = r'/home/administrator/ datasets / processed /mtcnn_frontal_resized_per_folder'
+
+    batch_size = 1
     workers = 0
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     mtcnn = MTCNN(
-        image_size=112,
+        # image_size=112,
         margin=0,
         device=device,
         selection_method='center_weighted_size'

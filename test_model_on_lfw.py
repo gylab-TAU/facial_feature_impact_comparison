@@ -10,15 +10,17 @@ from experiment_setup.dataloaders_setup import dataloaders_setup
 from experiment_setup.trainer_setup import get_trainer
 from experiment_setup.pairs_behaviour_setup import setup_pairs_reps_behaviour
 from data_prep.dlib_aligner_image_loader import DlibAlignerImageLoader
+import os
 
 if __name__ == '__main__':
     config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
     config.read(CONFIG_PATH)
 
     im_size = int(config['DATASET']['image_size'])
+    post_crop_im_size = int(config['DATASET']['post_crop_im_size'])
     dataset_means = json.loads(config['DATASET']['dataset_means'])
     dataset_stds = json.loads(config['DATASET']['dataset_stds'])
-    image_loader = ImageLoader(im_size, im_size, dataset_means, dataset_stds)
+    image_loader = ImageLoader(im_size, post_crop_im_size, dataset_means, dataset_stds)
 
     filter = setup_dataset_filter(config)
 
@@ -41,15 +43,16 @@ if __name__ == '__main__':
 
     # trainer.train_model(start_epoch, end_epoch, dataloaders)
 
-    print(lfw_tester.test_performance(trainer.model))
+    # print(lfw_tester.test_performance(trainer.model))
 
-    generic_image_loader = ImageLoader(im_size, dataset_means, dataset_stds)
-
-    reps_behaviour_extractor = setup_pairs_reps_behaviour(config, generic_image_loader)
+    reps_behaviour_extractor = setup_pairs_reps_behaviour(config, image_loader)
 
     output = reps_behaviour_extractor.test_behaviour(trainer.model)
 
-    with open('./results/comparisons.pkl', 'wb') as f:
+    results_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'], 'comparisons_face_angles.pkl')
+    print('Saving results in ', results_path)
+    os.makedirs(config['REP_BEHAVIOUR']['reps_results_path'], exist_ok=True)
+    with open(results_path, 'wb') as f:
         pickle.dump(output, f)
 
     print('done')
