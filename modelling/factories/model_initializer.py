@@ -4,14 +4,14 @@ import torch
 
 class ModelInitializer(object):
     """An initializer object retrieving a model customized for the single machine we are using."""
-    def __init__(self,feature_parallelized_archs:list =[]):
+    def __init__(self,feature_parallelized_archs: list = []):
         """
 
         :param feature_parallelized_archs: list of architectures whose feature can be parallelized over GPU.
         """
         self.feature_parallelized_archs = feature_parallelized_archs
 
-    def get_model(self, arch:str, is_pretrained:bool, num_classes:int):
+    def get_model(self, arch: str, is_pretrained: bool, num_classes: int) -> torch.nn.Module:
         """
         Returns an initialized model object, set to work with machine's resources
         :param arch: name of architecure to use

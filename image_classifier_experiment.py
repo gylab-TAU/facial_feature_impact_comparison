@@ -42,7 +42,10 @@ if __name__ == '__main__':
 
     output = reps_behaviour_extractor.test_behaviour(trainer.model)
 
-    with open(os.path.join(config['GENERAL']['results_dir'], 'raw_comparisons.pkl'), 'wb') as f:
+    results_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'], 'comparisons.pkl')
+    print('Saving results in ', results_path)
+    os.makedirs(config['REP_BEHAVIOUR']['reps_results_path'], exist_ok=True)
+    with open(results_path, 'wb') as f:
         pickle.dump(output, f)
 
     print('done')

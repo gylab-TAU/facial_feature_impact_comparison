@@ -11,6 +11,7 @@ def setup_pairs_reps_behaviour(config, image_loader):
     pairs_paths = json.loads(config['REP_BEHAVIOUR']['pairs_paths'])
     pairs_types_to_lists = {}
     for pairs_type in pairs_paths:
+        print(pairs_type)
         pairs_types_to_lists[pairs_type] = []
         with open(pairs_paths[pairs_type], 'r') as f:
             for line in f:
