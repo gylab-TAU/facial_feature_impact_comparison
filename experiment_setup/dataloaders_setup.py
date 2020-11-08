@@ -10,7 +10,8 @@ def dataloaders_setup(config, processed_dataset, image_loader):
     dataloaders = {}
     for phase in phase_size_dict:
         is_train = phase == TRAIN_PHASE
-        image_folder = image_loader.load_dataset(os.path.join(processed_dataset, phase), center_crop=not is_train)
+        ds_path = os.path.join(processed_dataset, phase)
+        image_folder = image_loader.load_dataset(ds_path, center_crop=not is_train)
         dataloaders[phase] = data.DataLoader(
             image_folder,
             batch_size=int(config['MODELLING']['batch_size']),

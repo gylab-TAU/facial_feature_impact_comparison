@@ -56,17 +56,16 @@ if __name__ == '__main__':
     # Will train the model from start_epoch to (end_epoch - 1) with the given dataloaders
     trainer.train_model(start_epoch, end_epoch, dataloaders)
 
-    print(lfw_tester.test_performance(trainer.model))
+    # print(lfw_tester.test_performance(trainer.model))
 
     reps_behaviour_extractor = setup_pairs_reps_behaviour(config, image_loader)
 
-    output = reps_behaviour_extractor.test_behaviour(trainer.model)
+    output = reps_behaviour_extractor.compare_lists(trainer.model)
 
-    results_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'], 'comparisons.pkl')
+    results_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'], 'comparisons.csv')
     print('Saving results in ', results_path)
     os.makedirs(config['REP_BEHAVIOUR']['reps_results_path'], exist_ok=True)
-    with open(results_path, 'wb') as f:
-        pickle.dump(output, f)
+    output.to_csv(results_path)
 
     print('done')
 

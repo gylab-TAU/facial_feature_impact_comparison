@@ -5,18 +5,21 @@ from modelling.factories.reflection.generic_criterion_initializer import Generic
 from modelling.factories.reflection.generic_optimizer_initializer import GenericOptimizerInitializer
 from modelling.factories.reflection.generic_lr_scheduler_initializer import GenericLRSchedulerInitializer
 from modelling.local_model_store import LocalModelStore
+from modelling.performance_logger import PerformanceLogger
+from modelling.performance_logger_stub import PerformanceLoggerStub
 
 
 def get_trainer(config, num_classes, start_epoch, perf_tester=None):
     model_store = LocalModelStore(config['MODELLING']['architecture'],
                                   config['GENERAL']['experiment_name'],
                                   config['GENERAL']['root_dir'])
-    try:
-        checkpoint_path = config['MODELLING']['checkpoint_path']
+    checkpoint_path_param_name = 'checkpoint_path'
+    checkpoint_path = None
+    if checkpoint_path_param_name in config['MODELLING']:
+        checkpoint_path = config['MODELLING'][checkpoint_path_param_name ]
         if checkpoint_path == '':
             checkpoint_path = None
-    except:
-        checkpoint_path = None
+
     trainer_factory = TrainerFactory(
         ModelInitializer(json.loads(config['MODELLING']['feature_parallelized_architectures'])),
         GenericCriterionInitializer(),
@@ -32,16 +35,17 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
         perf_threshold = float(config['MODELLING']['perf_threshold'])
         num_epochs_to_test = int(config['MODELLING']['num_epochs_to_test'])
 
+    perf_test_param_name = 'performance_test'
     perf_test_name = 'None'
-    try:
-        perf_test_name = config['MODELLING']['performance_test']
-    except:
-        perf_test_name = 'None'
+    if perf_test_param_name in config['MODELLING']:
+        perf_test_name = config['MODELLING'][perf_test_param_name]
+
+    perf_logger = get_performance_logger(config)
 
     trainer = trainer_factory.get_trainer(config['MODELLING']['architecture'],
                                           config['OPTIMIZING']['optimizer'], json.loads(config['OPTIMIZING']['optimizer_params']),
                                           config['MODELLING']['criterion_name'], json.loads(config['MODELLING']['criterion_params']),
-                                          config['OPTIMIZING']['lr_scheduler'], json.loads(config['MODELLING']['lr_scheduler_params']),
+                                          config['OPTIMIZING']['lr_scheduler'], json.loads(config['OPTIMIZING']['lr_scheduler_params']),
                                           num_classes,
                                           config['MODELLING']['is_pretrained'] == 'True',
                                           epoch=start_epoch,
@@ -49,6 +53,14 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
                                           performance_tester=perf_tester,
                                           performance_threshold=perf_threshold,
                                           num_epochs_to_test=num_epochs_to_test,
-                                          num_batches_per_epoch_limit=num_batches_per_epoch_limit, test_type=perf_test_name)
+                                          num_batches_per_epoch_limit=num_batches_per_epoch_limit, test_type=perf_test_name,
+                                          perf_logger=perf_logger)
 
     return trainer
+
+
+def get_performance_logger(config):
+    if 'perf_log_path' in config['MODELLING']:
+        return PerformanceLogger(config['MODELLING']['perf_log_path'])
+    else:
+        return PerformanceLoggerStub()
