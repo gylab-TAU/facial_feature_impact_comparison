@@ -1,11 +1,12 @@
 import os
 import glob
 from data_prep.util import transfer_datapoints
+import tqdm
 import numpy as np
 
 
 class NumClassProcessor(object):
-    def __init__(self, min_class, max_class, output_dataset_dir, class_name_filter=os.path.join('*', '*'), data_name_filter='*'):
+    def __init__(self, min_class, max_class, output_dataset_dir, class_name_filter=os.path.join('*'), data_name_filter='*'):
         self.__min_num_classes = min_class
         self.__max_num_classes = max_class
         self.__class_name_filter = class_name_filter
@@ -28,8 +29,8 @@ class NumClassProcessor(object):
         filtered_dataset_output = os.path.join(self.__output_dataset_dir, f'{dataset_name}_num-classes_{num_classes_to_use}')
 
         if not os.path.exists(filtered_dataset_output):
-            for i in range(num_classes_to_use):
-                class_dir_paths = glob.glob(os.path.join(raw_dataset_dir, '*', classes_to_use[i]))
+            for i in tqdm.tqdm(range(num_classes_to_use), desc='num class filter'):
+                class_dir_paths = glob.glob(os.path.join(raw_dataset_dir, classes_to_use[i]))
                 for class_path in class_dir_paths:
                     data_points = glob.glob(os.path.join(class_path, self.__data_name_filter))
 

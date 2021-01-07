@@ -14,4 +14,6 @@ class GenericOptimizerInitializer(object):
         :param params: a dictionary with the optimizer's specific parameters
         :return: the instantiated optimizer
         """
-        return torch.optim.__dict__[optimizer_name](model.parameters(), **params)
+        optim = torch.optim.__dict__[optimizer_name](model.parameters(), **params)
+        # print(optim)
+        return optim;

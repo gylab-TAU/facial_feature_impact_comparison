@@ -1,9 +1,9 @@
-
+''' makes a new folder with ids, each with random #num_img images - could be same images or different one'''
 import os, random
 import shutil
 
 
-class id_num:
+class IdNum:
 
     def __init__(self, src_path, num_imgs, dst_path, same):
         self.src_path = src_path
@@ -34,9 +34,11 @@ class id_num:
 
                 if not self.same:
                     #choose randomly num_imgs from src folder to be copied to dest folder
+                    if num_to_copy > len(os.listdir(img_path)):
+                        num_to_copy = len(os.listdir(img_path))
                     filename_list = random.sample(os.listdir(img_path), num_to_copy)
                     for filename in filename_list:
-                        filename, file_extension = os.path.splitext(random.choice(os.listdir(img_path)))
+                        filename, file_extension = os.path.splitext(filename)
                         dest_image = os.path.join(dst, filename + file_extension)
                         shutil.copy(os.path.join(img_path, filename + file_extension), dest_image)
                 else:
@@ -53,11 +55,11 @@ class id_num:
 
 
 if __name__ == '__main__':
-    args = None;
-    src_path = r"/home/administrator/datasets/processed/mtcnn_frontal_resized_per_folder"
-    dst_path = r"/home/administrator/datasets/same_imgs"
-    same = 1
-    num_imgs =10
+    args = None
+    src_path = r"/home/administrator/datasets/processed/2_ids_num_changed/2_ids_5_train_50_val"
+    dst_path = r"/home/administrator/datasets/processed/2_ids_num_changed/2_ids_1_train_50_val"
+    same = 0
+    num_imgs = 1
 
-    new_obj = id_num(src_path, num_imgs, dst_path, same)
+    new_obj = IdNum(src_path, num_imgs, dst_path, same)
     new_obj.multiply()

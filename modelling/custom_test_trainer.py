@@ -1,4 +1,5 @@
 import torch
+import time
 from tqdm import tqdm
 import const
 
@@ -23,32 +24,43 @@ class CustomTestTrainer(object):
         for epoch in range(start_epoch, end_epoch):
             print(f'Epoch: {epoch}')
 
-            print("lr before train: ", self.__lr_scheduler.get_last_lr())
+            # print("lr before train: ", self.__lr_scheduler.get_last_lr())
             # modelling for one epoch
             phase_loss, phase_acc = self.__per_phase(epoch, const.TRAIN_PHASE, data_loaders)
             print(phase_loss, phase_acc)
-            phase_loss, phase_acc = self.__per_phase(epoch, const.VAL_PHASE, data_loaders)
-            print(phase_loss, phase_acc)
 
-            print("lr after train: ", self.__lr_scheduler.get_last_lr())
+
+            # print("lr after train: ", self.__lr_scheduler.get_last_lr())
             self.__lr_scheduler.step()
-            print("lr after train and step: ", self.__lr_scheduler.get_last_lr())
+            # print("lr after train and step: ", self.__lr_scheduler.get_last_lr())
 
             # remember best acc@1 and save checkpoint
             is_best = phase_acc > self.__best_acc1
             self.__best_acc1 = max(phase_acc, self.__best_acc1)
+            # if is_best:
+            #     self.__model_store.save_model(self.model, self.__optimizer, epoch, self.__best_acc1, is_best)
 
-            self.__model_store.save_model(self.model, self.__optimizer, epoch, self.__best_acc1, is_best)
+            if self.__should_test(epoch+1):
+                phase_loss, phase_acc = self.__per_phase(epoch, const.VAL_PHASE, data_loaders)
+                print(phase_loss, phase_acc)
 
-            if self.__should_test(epoch):
-                perf = self.__test_performance(epoch)
+                is_best = phase_acc > self.__best_acc1
+                self.__best_acc1 = max(phase_acc, self.__best_acc1)
+                save_start = time.perf_counter()
+                self.__model_store.save_model(self.model, self.__optimizer, epoch, self.__best_acc1, is_best)
+                print("save time: ", time.perf_counter()-save_start)
+                bruto_test = time.perf_counter()
+                perf = self.__test_performance(epoch+1)
+                print("bruto test time: ", time.perf_counter()-bruto_test)
                 if perf is not None:
                     print (f'Done in {epoch} epochs')
                     print(perf)
                     return perf
 
     def __test_performance(self, epoch):
+        start_time = time.perf_counter()
         performance_df = self.__performance_tester.test_performance(self.model)
+        print("neto test time: ", time.perf_counter() - start_time)
         self.__performance_logger.log_performance(epoch, performance_df)
         for layer in performance_df.index:
             accuracy = performance_df.loc[layer]['acc@1']
@@ -82,26 +94,31 @@ class CustomTestTrainer(object):
         self.model.train(phase == const.TRAIN_PHASE)
         with torch.set_grad_enabled(phase == const.TRAIN_PHASE):
             data_loader_iter = iter(data_loaders[phase])
-            for i in tqdm(range(num_batches), desc=phase):
+            pbar = tqdm(range(num_batches), desc=phase)
+            for i in pbar:
                 (images, target) = next(data_loader_iter)
 
                 batch_loss, batch_acc = self.__per_batch(images, target)
                 # print(batch_loss, batch_acc.item())
-                if batch_loss >= 10:
-                    # I once got a batchloss = Inf so I added this print to give a heads up
-                    print('batch_loss >= 10', batch_loss)
+                # if batch_loss >= 10:
+                #     # I once got a batchloss = Inf so I added this print to give a heads up
+                #     print('batch_loss >= 10', batch_loss)
                 phase_loss += batch_loss / num_batches
                 phase_acc += batch_acc / num_batches
+
+                pbar.set_description("batch loss: " + str(batch_loss))
 
         return phase_loss, phase_acc
 
     def __per_batch(self, images, target):
         if torch.cuda.is_available():
-            images = images.cuda(non_blocking=False)
-            target = target.cuda(non_blocking=False)
+            images = images.cuda(non_blocking=True)
+            target = target.cuda(non_blocking=True)
 
         # compute output
-        output = self.model(images)
+        output = self.model(images) # DCNN
+        if type(output) is not torch.Tensor:
+            output = output[0]
         loss = self.__criterion(output, target)
 
         _, preds = torch.max(output, 1)

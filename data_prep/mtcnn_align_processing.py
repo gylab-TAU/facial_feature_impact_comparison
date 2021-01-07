@@ -10,11 +10,13 @@ class MTCNNAlignProcessor(object):
     """
     Processor that crops aligned faces from face images (using trained MTCNN algo)
     """
-    def __init__(self, image_size: int,
-                 margin: int,
+    def __init__(self,
                  output_dataset_dir: str,
+                 image_size: int=112,
+                 margin: int=0,
                  class_name_filter: str = '*',
-                 batch_size: int = 16):
+                 batch_size: int = 1,
+                 workers: int = 0):
         """
 
         :param image_size: num of pixel to save the image (image_size x image_size)
@@ -31,7 +33,10 @@ class MTCNNAlignProcessor(object):
                              selection_method='center_weighted_size')
         self.__batch_size = batch_size
         self.__class_name_filter = class_name_filter
+        self.__workers = workers
         self.__output_dataset_dir = output_dataset_dir
+
+
 
     def process_dataset(self, raw_dataset_dir, dataset_name):
         processed_dataset_output_path = os.path.join(self.__output_dataset_dir, 'mtcnn_aligned', dataset_name)
@@ -54,11 +59,12 @@ class MTCNNAlignProcessor(object):
             try:
                 crops = [p.replace(raw_dataset_dir, processed_dataset_output_path) for p in b_paths]
                 self.__mtcnn(x, save_path=crops)
-                print('\rBatch {} of {}'.format(i + 1, len(loader)), end='')
+
+                # print('\rBatch {} of {}'.format(i + 1, len(loader)), end='')
             except TypeError:
                 print('Bad paths: ', b_paths)
 
-        num_classes_to_use = glob.glob(processed_dataset_output_path, self.__class_name_filter)
+        num_classes_to_use = glob.glob(os.path.join(processed_dataset_output_path, self.__class_name_filter))
 
         return processed_dataset_output_path, num_classes_to_use
 

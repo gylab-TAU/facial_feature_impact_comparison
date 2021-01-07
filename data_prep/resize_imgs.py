@@ -13,17 +13,21 @@ import itertools
 
 
 """
-analyse the dataset - quantity of images for each id (val & train) & resize all images to fit mtcnn
+analyse the dataset -create a csv  with quantity of images for each id (val & train) & resize all images to fit mtcnn
 """
+
 
 import os
 from PIL import Image
 
 
 # path = r'C:\Users\mandy\Desktop\studies\masterSupp\project\faceAlignment\test_source'
-path = r'/home/administrator/datasets/processed//mtcnn_frontal_resized_per_folder'
-csv_path = r'/home/administrator/datasets/processed/csvs/val_train.csv'
-dest_path = r'/home/administrator/ datasets / processed /frontal_resized'
+# path = r'/home/administrator/datasets/processed/same_imgs_10_per_id'
+path = r'/home/administrator/datasets/id_changed_from_faces_only/50_ids_300_img_per_id'
+
+
+csv_path = r'/home/administrator/datasets/processed/csvs/id_changed_from_faces_only_50_ids_300_imgs.csv'
+dest_path = r'/home/administrator/datasets/id_changed_from_faces_only/500_ids_300_img_per_id'
 
 
 def main(args):
