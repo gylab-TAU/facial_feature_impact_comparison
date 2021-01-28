@@ -1,7 +1,7 @@
 import os
 import glob
 import pandas as pd
-os.chdir("/home/administrator/experiments/50_ids/50_ids_100_img_per_id_val_50/vgg16/results/")
+os.chdir("/home/administrator/experiments/mandy_experiments_configurations/gaus_2_csv_to_concat/2_ids/")
 import pandas as pd
 
 
@@ -34,20 +34,26 @@ class CsvEdit:
         combined_csv = pd.concat([pd.read_csv(f) for f in all_filenames ])
         #export to csv
         combined_csv.to_csv( "combined_csv.csv", index=False, encoding='utf-8-sig')
+        print(os.getcwd())
 
     def reorder(self):
 
-        df = pd.read_csv('/home/administrator/experiments/50_ids/50_ids_100_img_per_id_val_50/vgg16/results/combined_csv.csv')
+        # df = pd.read_csv('/home/administrator/experiments/50_ids/50_ids_100_img_per_id_val_50/vgg16/results/combined_csv.csv')
+        df = pd.read_csv('/home/administrator/experiments/mandy_experiments_configurations/gaus_2_csv_to_concat/2_ids/combined_csv.csv')
+        # df = pd.read_csv('/home/administrator/experiments/2_ids/2_ids_20_img_per_id_val_50/vgg16/results/comparisons_with_fc7_linear_img_added.csv')
+
         # df_reorder = df[['A', 'B', 'C', 'D', 'E']]  # rearrange column here
-        df_reorder = df[['Images','Unnamed: 0', 'input', 'conv1', 'conv2', 'conv3', 'conv4', 'conv5', 'fc6', 'fc7', 'fc8', 'type']]
+        df_reorder = df[['Images','Unnamed: 0.1', 'input', 'conv1', 'conv2', 'conv3', 'conv4', 'conv5', 'fc6', 'fc7', 'fc8', 'type']]
 
         df_reorder.to_csv(self.dest_csv, index=False)
 
 if __name__ == '__main__':
     #create a list of the csvs:
-    csv_dir_path ='/home/administrator/experiments/mandy_experiments_configurations/csvs_to_concat/1000_ids'
+    # csv_dir_path ='/home/administrator/experiments/mandy_experiments_configurations/gaus_3_csv_to_concat/5_ids'
+    csv_dir_path = '/home/administrator/experiments/csvs_test/1000_ids'
+
     csv_list = os.listdir(csv_dir_path)
-    # csv_list_to_concat = ['/home/administrator/experiments/mandy_experiments_configurations/csvs_to_concat/10_ids/comparisons_with_fc7_linear_10_ids_50.csv']
+    # csv_list_to_concat = ['/home/administrator/experiments/2_ids/2_ids_20_img_per_id_val_50/vgg16/results/comparisons_with_fc7_linear.csv']
     csv_list_to_concat = []
     for i in csv_list:
         csv_list_to_concat.append( os.path.join(csv_dir_path, i))
@@ -55,7 +61,9 @@ if __name__ == '__main__':
     # csv_list = ["/home/administrator/experiments/50_ids/50_ids_100_img_per_id_val_50/vgg16/results/test1.csv",
     #             '/home/administrator/experiments/50_ids/50_ids_100_img_per_id_val_50/vgg16/results/test2.csv',
     #             '/home/administrator/experiments/50_ids/50_ids_100_img_per_id_val_50/vgg16/results/test3.csv']
-    dest_csv = "/home/administrator/experiments/mandy_experiments_configurations/csvs_to_concat/1000_ids/1000_ids_all.csv"
+    dest_csv = "/home/administrator/experiments/csvs_test/1000_ids/1000_ids_all_gaus_3.csv"
+    # dest_csv = "/home/administrator/experiments/2_ids/2_ids_20_img_per_id_val_50/vgg16/results/comparisons_with_fc7_linear_img_added_ordered.csv"
+
 
     new_obj = CsvEdit(csv_list_to_concat, dest_csv)
     # new_obj.add_img_num()
