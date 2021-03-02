@@ -56,10 +56,10 @@ class IdNum:
 
 if __name__ == '__main__':
     args = None
-    src_path = r"/home/administrator/datasets/processed/2_ids_num_changed/2_ids_5_train_50_val"
-    dst_path = r"/home/administrator/datasets/processed/2_ids_num_changed/2_ids_1_train_50_val"
+    src_path = r"/home/administrator/datasets/processed/100_ids_num_changed/100_ids_50_train_50_val"
+    dst_path = r"/home/administrator/datasets/processed/100_ids_num_changed/100_ids_20_train_50_val"
     same = 0
-    num_imgs = 1
+    num_imgs = 20
 
     new_obj = IdNum(src_path, num_imgs, dst_path, same)
     new_obj.multiply()

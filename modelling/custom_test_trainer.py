@@ -99,10 +99,7 @@ class CustomTestTrainer(object):
                 (images, target) = next(data_loader_iter)
 
                 batch_loss, batch_acc = self.__per_batch(images, target)
-                # print(batch_loss, batch_acc.item())
-                # if batch_loss >= 10:
-                #     # I once got a batchloss = Inf so I added this print to give a heads up
-                #     print('batch_loss >= 10', batch_loss)
+
                 phase_loss += batch_loss / num_batches
                 phase_acc += batch_acc / num_batches
 

@@ -1,15 +1,20 @@
 import os
 import glob
+from pathlib import Path
+import re
+
 import pandas as pd
-os.chdir("/home/administrator/experiments/mandy_experiments_configurations/gaus_2_csv_to_concat/2_ids/")
+import shutil
+# os.chdir("/home/administrator/experiments/mandy_experiments_configurations/gaus_2_csv_to_concat/2_ids/")
 import pandas as pd
 
 
 class CsvEdit:
 
-    def __init__(self, csv_list, dest_csv):
+    def __init__(self, csv_list, dest_csv, csv_dir_path):
         self.csv_list = csv_list
         self.dest_csv = dest_csv
+        self.src_dir = Path(csv_dir_path)
 
     def add_img_num(self):
         for csv_file in self.csv_list:
@@ -42,15 +47,32 @@ class CsvEdit:
         df = pd.read_csv('/home/administrator/experiments/mandy_experiments_configurations/gaus_2_csv_to_concat/2_ids/combined_csv.csv')
         # df = pd.read_csv('/home/administrator/experiments/2_ids/2_ids_20_img_per_id_val_50/vgg16/results/comparisons_with_fc7_linear_img_added.csv')
 
-        # df_reorder = df[['A', 'B', 'C', 'D', 'E']]  # rearrange column here
         df_reorder = df[['Images','Unnamed: 0.1', 'input', 'conv1', 'conv2', 'conv3', 'conv4', 'conv5', 'fc6', 'fc7', 'fc8', 'type']]
 
         df_reorder.to_csv(self.dest_csv, index=False)
 
+    def copy_all_csvs(self):
+
+        i=0
+        for file in os.listdir(self.src_dir):
+            path_to_folder_csv = str(self.src_dir) +'/'+ file + '/vgg16'+'/results'
+            for f in os.listdir(path_to_folder_csv):
+                if (re.match('comparison_with', f) or re.match('comparisons_with', f)):
+                    name_of_csv = f
+            path_to_csv =os.path.join( path_to_folder_csv, name_of_csv) #'/comparison_with_fc7_linear.csv'
+            new_name = str(self.dest_csv) + '/comparison_with_fc7_linear'+str(i)+'.csv'
+            shutil.copy(path_to_csv, self.dest_csv)  # copy the file to destination dir
+
+            os.rename(os.path.join(self.dest_csv, name_of_csv), new_name)  # rename
+            i+=1
+
+
 if __name__ == '__main__':
     #create a list of the csvs:
     # csv_dir_path ='/home/administrator/experiments/mandy_experiments_configurations/gaus_3_csv_to_concat/5_ids'
-    csv_dir_path = '/home/administrator/experiments/csvs_test/1000_ids'
+    # csv_dir_path = Path('/home/administrator/experiments/random_run_results/')
+    csv_dir_path = Path('/home/administrator/experiments/all_ids/')
+
 
     csv_list = os.listdir(csv_dir_path)
     # csv_list_to_concat = ['/home/administrator/experiments/2_ids/2_ids_20_img_per_id_val_50/vgg16/results/comparisons_with_fc7_linear.csv']
@@ -61,11 +83,13 @@ if __name__ == '__main__':
     # csv_list = ["/home/administrator/experiments/50_ids/50_ids_100_img_per_id_val_50/vgg16/results/test1.csv",
     #             '/home/administrator/experiments/50_ids/50_ids_100_img_per_id_val_50/vgg16/results/test2.csv',
     #             '/home/administrator/experiments/50_ids/50_ids_100_img_per_id_val_50/vgg16/results/test3.csv']
-    dest_csv = "/home/administrator/experiments/csvs_test/1000_ids/1000_ids_all_gaus_3.csv"
+    dest_csv = "/home/administrator/experiments/random_run_results/"
+    dest_csv = "/home/administrator/experiments/"
     # dest_csv = "/home/administrator/experiments/2_ids/2_ids_20_img_per_id_val_50/vgg16/results/comparisons_with_fc7_linear_img_added_ordered.csv"
 
 
-    new_obj = CsvEdit(csv_list_to_concat, dest_csv)
-    # new_obj.add_img_num()
-    new_obj.concat()
-    new_obj.reorder()
+    new_obj = CsvEdit(csv_list_to_concat, dest_csv, csv_dir_path)
+    new_obj.add_img_num()
+    new_obj.copy_all_csvs()
+    # new_obj.concat()
+    # new_obj.reorder()

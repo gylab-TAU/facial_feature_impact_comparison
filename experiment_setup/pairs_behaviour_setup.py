@@ -1,5 +1,6 @@
 import json
 import os
+import torch.utils.data as data
 
 from representation.analysis.MultiDatasetCompare import MultiDatasetComparer
 from representation.analysis.metrics.euclidian_distance_compare import EuclidianDistanceCompare
@@ -7,10 +8,24 @@ from representation.analysis.pairs_list_compare import PairsListComparer
 from representation.acquisition.model_layer_dicts.blauch_equivalent_list_model_dict import get_model_layers_dict
 from representation.analysis.multi_list_comparer import MultiListComparer
 from representation.analysis.rep_dist_mat import DistMatrixComparer
+from representation.activations.activation_acquisition import ActivationAcquisition
 
 def setup_pairs_reps_behaviour(config, image_loader):
     if 'REP_BEHAVIOUR' not in config:
         return
+
+    if 'activations' in config['REP_BEHAVIOUR'] and config['REP_BEHAVIOUR']['activations'] == 'True':
+        ds_path = config['REP_BEHAVIOUR']['activations_dataset']
+        whitelist = json.loads(config['REP_BEHAVIOUR']['whitelist'])
+        activations_dataset = data.DataLoader(
+            image_loader.load_dataset(ds_path),
+            batch_size=int(config['MODELLING']['batch_size']),
+            num_workers=int(config['MODELLING']['workers']),
+            shuffle=False,
+            pin_memory=True,
+            drop_last=False)
+        return ActivationAcquisition(activations_dataset, whitelist, int(config['MODELLING']['num_classes']))
+
     pairs_image_dirs = json.loads(config['REP_BEHAVIOUR']['pairs_image_dirs'])
 
     reps_cache_path = config['REP_BEHAVIOUR']['reps_cache_path']

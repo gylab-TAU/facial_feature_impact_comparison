@@ -1,8 +1,10 @@
 import os
 
+import torchvision
 from PIL import Image, ImageFilter
 import ntpath
 from pathlib import Path
+import torchvision.transforms as transforms
 
 
 
@@ -46,6 +48,23 @@ class Blur():
                 # Applying simple blur filter
                 blurImage = OriImage.filter(ImageFilter.BLUR)
 
+            if self.blur_tech == 'Gamma':
+                # Applying gamma filter
+                pil2tensor = transforms.ToTensor()
+                tensor2pil = transforms.ToPILImage()
+                TOriImage = pil2tensor(OriImage)
+                FblurImage = transforms.functional.adjust_gamma(TOriImage, blur_level)
+                blurImage = tensor2pil(FblurImage)
+
+            if self.blur_tech == 'Crop':
+                # Applying gamma filter
+                # should these lines apply random crop on TOriImage?
+                pil2tensor = transforms.ToTensor()
+                tensor2pil = transforms.ToPILImage()
+                TOriImage = pil2tensor(OriImage)
+                cropper = torchvision.transforms.RandomCrop(110)
+                FblurImage = cropper(TOriImage)
+                blurImage = tensor2pil(FblurImage)
 
             # Save Blur Image
             # blurImage.save(self.dst_image_path)
@@ -75,15 +94,19 @@ if __name__ == '__main__':
     #ref
     # src_path = r'/home/administrator/datasets/faces_in_views/ref'
     # src_path = r'/home/administrator/datasets/faces_in_views/ref/aligned'
-    src_path = r'/home/administrator/datasets/faces_in_views/ref/mtcnn_160/aligned'
+    # src_path = r'/home/administrator/datasets/faces_in_views/ref/mtcnn_160/aligned'
 
 ####critical features#####
     # src_path = r'/home/administrator/datasets/high_low_ps_images/joined'
+    src_path = r'/home/administrator/datasets/test_for_gamma_src/'
 
-    dst_image_path = r'/home/administrator/datasets/processed/blurred/blurred_Gaus_3.jpg'
+
+    # dst_image_path = r'/home/administrator/datasets/processed/blurred/blurred_Gaus_3.jpg'
+    dst_image_path = r'/home/administrator/datasets/test_for_gamma_dst/gamma_1.jpg'
+
 #####head views#######
     #half left
-    # dst_path = r'/home/administrator/datasets/processed/blurred/blurred_gaus_3/faces_in_views/half-left/cropped'
+    dst_path = r'/home/administrator/datasets/processed/blurred/blurred_gaus_3/faces_in_views/half-left/cropped'
     # dst_path = r'/home/administrator/datasets/processed/blurred/blurred_gaus_3/faces_in_views/half-left/cropped/bb'
     # dst_path = r'/home/administrator/datasets/processed/blurred/blurred_gaus_3/faces_in_views/half-left/cropped/bb/aligned'
     # dst_path = r'/home/administrator/datasets/processed/blurred/blurred_gaus_3/faces_in_views/half-left/cropped/bb/mtcnn_160/aligned'
@@ -99,13 +122,14 @@ if __name__ == '__main__':
     #ref
     # dst_path = r'/home/administrator/datasets/processed/blurred/blurred_gaus_3/faces_in_views/ref'
     # dst_path = r'/home/administrator/datasets/processed/blurred/blurred_gaus_3/faces_in_views/ref/aligned'
-    dst_path = r'/home/administrator/datasets/processed/blurred/blurred_gaus_3/faces_in_views/ref/mtcnn_160/aligned'
+    # dst_path = r'/home/administrator/datasets/processed/blurred/blurred_gaus_3/faces_in_views/ref/mtcnn_160/aligned'
 
 #####critical features######
     # dst_path = r'/home/administrator/datasets/processed/blurred/blurred_gaus_3/high_ps_low_ps/'
+    # dst_path = r'/home/administrator/datasets/test_for_gamma_dst/'
 
-    blur_tech = 'Gaus' #/Simple/Box/Gaus
-    blur_level = 3
+    blur_tech = 'Gaus' #/Simple/Box/Gaus/Gamma/Crop
+    blur_level = int(3)
 
     new_blur = Blur(src_image_path, src_path, dst_path, dst_image_path, blur_tech, blur_level)
     new_blur.blur_image()

@@ -38,7 +38,11 @@ def run_experiment(config_path):
     post_crop_im_size = int(config['DATASET']['post_crop_im_size'])
     dataset_means = json.loads(config['DATASET']['dataset_means'])
     dataset_stds = json.loads(config['DATASET']['dataset_stds'])
-    image_loader = ImageLoader(im_size, post_crop_im_size, dataset_means, dataset_stds)
+    crop_scale=None
+    if 'crop_scale' in config['DATASET']:
+        crop_scale = json.loads(config['DATASET']['crop_scale'])
+        crop_scale = (crop_scale['max'], crop_scale['min'])
+    image_loader = ImageLoader(im_size, post_crop_im_size, dataset_means, dataset_stds, crop_scale=crop_scale)
 
     # Create the dataset filters by config (if they are needed)
     filter = setup_dataset_filter(config)
@@ -75,7 +79,7 @@ def run_experiment(config_path):
 
     lfw_results = lfw_tester.test_performance(trainer.model)
     print(lfw_results)
-    # lfw_results.to_csv(lfw_path)
+
 
     reps_behaviour_extractor = setup_pairs_reps_behaviour(config, image_loader)
     if reps_behaviour_extractor != None:
@@ -90,6 +94,7 @@ def run_experiment(config_path):
         os.makedirs(config['REP_BEHAVIOUR']['reps_results_path'], exist_ok=True)
         if output is not None:
             output.to_csv(results_path)
+        lfw_results.to_csv(lfw_path)
 
 
     end = time.perf_counter()

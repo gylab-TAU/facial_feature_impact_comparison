@@ -93,23 +93,34 @@ def run_experiment(config_path):
                     output['index'] = overall_index
                     output['num_ids'] = id
                     output['num_pics'] = pic
+                    # saving results for the meanwhile
+                    results_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'],
+                                                config['REP_BEHAVIOUR']['output_filename'] + '.csv')
+                    lfw_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'], 'logs.csv')
+                    os.makedirs(config['REP_BEHAVIOUR']['reps_results_path'], exist_ok=True)
+                    output.to_csv(results_path)
+                    lfw_results.to_csv(lfw_path)
                     if all_output is None:
                         all_output = output
                     else:
                         all_output = all_output.append(output)
+
                 overall_index += 1
                 print(all_output)
                 print(all_lfw_results)
 
     config['GENERAL']['experiment_name'] = experiment_name
+    # lfw_path = os.path.join(root_dir, experiment_name + '_all', rep_dir, lfw_filename)
+    # results_path = os.path.join(root_dir, experiment_name + '_all', rep_dir, rep_filename)
     results_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'],
                                 config['REP_BEHAVIOUR']['output_filename'] + '.csv')
-    lfw_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'], 'logs.csv')
+
+    lfw_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'], config['LFW_TEST']['lfw_results_file'] + '.csv')
     print('Saving results in ', results_path)
     os.makedirs(config['REP_BEHAVIOUR']['reps_results_path'], exist_ok=True)
     if all_output is not None:
         all_output.to_csv(results_path)
-    all_lfw_results.to_csv(lfw_path)
+        all_lfw_results.to_csv(lfw_path)
 
 
     end = time.perf_counter()
