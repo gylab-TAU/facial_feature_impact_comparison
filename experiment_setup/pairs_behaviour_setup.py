@@ -26,7 +26,7 @@ def setup_pairs_reps_behaviour(config, image_loader):
             drop_last=False)
         return ActivationAcquisition(activations_dataset, whitelist, int(config['MODELLING']['num_classes']))
 
-    pairs_image_dirs = json.loads(config['REP_BEHAVIOUR']['pairs_image_dirs'])
+    
 
     reps_cache_path = config['REP_BEHAVIOUR']['reps_cache_path']
 
@@ -38,6 +38,7 @@ def setup_pairs_reps_behaviour(config, image_loader):
                                     config['REP_BEHAVIOUR']['reps_results_path'])
 
     else:
+        pairs_image_dirs = json.loads(config['REP_BEHAVIOUR']['pairs_image_dirs'])
         pairs_paths = json.loads(config['REP_BEHAVIOUR']['pairs_paths'])
         pairs_types_to_lists = {}
         for pairs_type in pairs_paths:
