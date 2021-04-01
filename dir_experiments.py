@@ -13,6 +13,7 @@ from experiment_setup.dataset_filters_setup import setup_dataset_filter
 from experiment_setup.dataloaders_setup import dataloaders_setup
 from experiment_setup.generic_trainer_setup import get_trainer
 from experiment_setup.pairs_behaviour_setup import setup_pairs_reps_behaviour
+import modelling.finetuning
 from representation.analysis.rep_dist_mat import DistMatrixComparer
 
 
@@ -38,7 +39,7 @@ def run_experiment(config_path):
     post_crop_im_size = int(config['DATASET']['post_crop_im_size'])
     dataset_means = json.loads(config['DATASET']['dataset_means'])
     dataset_stds = json.loads(config['DATASET']['dataset_stds'])
-    crop_scale=None
+    crop_scale = None
     if 'crop_scale' in config['DATASET']:
         crop_scale = json.loads(config['DATASET']['crop_scale'])
         crop_scale = (crop_scale['max'], crop_scale['min'])
@@ -71,8 +72,15 @@ def run_experiment(config_path):
     # creating the lfw tester
     lfw_tester = get_lfw_test(config, image_loader)
 
+    num_classes = int(config['MODELLING']['num_classes'])
+
     # Creating the trainer and loading the pretrained model if specified in the configuration
     trainer = get_trainer(config, num_classes, start_epoch, lfw_tester)
+
+    if 'FINETUNING' in config:
+        model = modelling.finetuning.freeze_layers(trainer.model, int(config['FINETUNING']['freeze_end']))
+        model = modelling.finetuning.append_classes(model, int(config['FINETUNING']['num_classes']))
+        trainer.model = model
 
     # Will train the model from start_epoch to (end_epoch - 1) with the given dataloaders
     trainer.train_model(start_epoch, end_epoch, dataloaders)
@@ -103,7 +111,6 @@ def run_experiment(config_path):
     print((time.process_time()) / 3600)
     print('done')
 
-    # TODO: Add option to start from existing models.
     # TODO: Divide the analysis from training and from the data prep - use dir tree as indicator to the model training
 
 
