@@ -7,6 +7,8 @@ from modelling.factories.reflection.generic_lr_scheduler_initializer import Gene
 from modelling.local_model_store import LocalModelStore
 from modelling.performance_logger import PerformanceLogger
 from modelling.performance_logger_stub import PerformanceLoggerStub
+from modelling.factories.arcface.arcface_loss_initializer import ArcFaceCriterionInitializer
+from modelling.factories.arcface.arcface_model_initializier import ArcFaceModelInitializer
 
 
 def get_trainer(config, num_classes, start_epoch, perf_tester=None):
@@ -21,8 +23,8 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
             checkpoint_path = None
 
     trainer_factory = TrainerFactory(
-        ModelInitializer(json.loads(config['MODELLING']['feature_parallelized_architectures'])),
-        GenericCriterionInitializer(),
+        ArcFaceModelInitializer(json.loads(config['MODELLING']['feature_parallelized_architectures'])),
+        ArcFaceCriterionInitializer(),
         GenericOptimizerInitializer(),
         GenericLRSchedulerInitializer(),
         model_store)
