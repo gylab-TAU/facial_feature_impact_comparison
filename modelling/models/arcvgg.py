@@ -28,6 +28,7 @@ batch_norm = {
     'vgg19_bn'
 }
 
+
 class ArcVGG(torchvision.models.VGG):
     def __init__(
             self,
