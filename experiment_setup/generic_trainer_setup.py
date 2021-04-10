@@ -42,6 +42,10 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
 
     perf_logger = get_performance_logger(config)
 
+    logs_path = None
+    if 'logs_path' in config['MODELLING']:
+        logs_path = config['MODELLING']['logs_path']
+
     trainer = trainer_factory.get_trainer(config['MODELLING']['architecture'],
                                           config['OPTIMIZING']['optimizer'], json.loads(config['OPTIMIZING']['optimizer_params']),
                                           config['MODELLING']['criterion_name'], json.loads(config['MODELLING']['criterion_params']),
@@ -54,7 +58,7 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
                                           performance_threshold=perf_threshold,
                                           num_epochs_to_test=num_epochs_to_test,
                                           num_batches_per_epoch_limit=num_batches_per_epoch_limit, test_type=perf_test_name,
-                                          perf_logger=perf_logger)
+                                          perf_logger=perf_logger, logs_path=logs_path)
 
     return trainer
 

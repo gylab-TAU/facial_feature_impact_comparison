@@ -21,7 +21,7 @@ class ImageLoader(object):
         self.random_crop_tt = transforms.Compose([
                 transforms.Resize(im_size),
                 transforms.CenterCrop(post_crop_size),
-                transforms.RandomResizedCrop(post_crop_size),
+                # transforms.RandomResizedCrop(post_crop_size),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 normalize,

@@ -26,7 +26,7 @@ class TrainerFactory(object):
                     performance_threshold: float = 1,
                     num_epochs_to_test: int = None,
                     num_batches_per_epoch_limit: int = 0, test_type: str = 'None',
-                    perf_logger=None):
+                    perf_logger=None, logs_path=None):
         model = self.model_initializer.get_model(arch, is_pretrained, num_classes)
         criterion = self.criterion_initializer.get_criterion(criterion_name, criterion_params)
         optimizer = self.optimizer_initializer.get_optimizer(optimizer_name, model, optimizer_params)
@@ -53,7 +53,7 @@ class TrainerFactory(object):
                                      accuracy_threshold=performance_threshold,
                                      num_epochs_to_test=num_epochs_to_test,
                                      num_batches_per_epoch_limit=num_batches_per_epoch_limit,
-                                     perf_logger=perf_logger)
+                                     perf_logger=perf_logger, logs_path=logs_path)
 
 
         elif test_type == 'standard':
