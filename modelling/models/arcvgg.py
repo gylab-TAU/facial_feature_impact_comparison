@@ -36,21 +36,19 @@ class ArcVGG(torchvision.models.VGG):
         super(ArcVGG, self).__init__(vgg.make_layers(cfgs[arch_to_cfg [arch]], batch_norm=arch in batch_norm), num_classes, **kwargs)
         self.classifier[-1] = torch.nn.Linear(4096, num_classes, bias=False)
 
-    def cosine_sim_per_line(self, x1: torch.Tensor, x2: torch.Tensor):
-        x1_norm = x1 / x1.norm(dim=1)[:, None]
-        x2_norm = x2 / x2.norm(dim=1)[:, None]
-        res = torch.mm(x1_norm, x2_norm.transpose(0, 1))
-        return res
-
     def forward(self, x: torch.Tensor):
-        if not self.training:
-            return super(ArcVGG, self)(x)
-        elif self.training:
-            x = self.features(x)
-            x = self.avgpool(x)
-            x = torch.flatten(x, 1)
-            for i in len(self.classifier) - 1:
-                x = self.classifier[i](x)
-            x = self.cosine_sim_per_line(x, self.classifer[-1].weights)
-            x = torch.arccos(x)
-            return x
+        # if not self.training:
+        #     return super(ArcVGG, self).forward(x)
+        # elif self.training:
+        x = self.features(x)
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        for i in range(len(self.classifier) - 3):
+            x = self.classifier[i](x)
+        x = x / x.norm(dim=1)[:, None]
+        x = self.classifier[-3](x) # ReLU
+        x = self.classifier[-2](x) # Dropout
+
+        x = self.classifier[-1](x) # FC8
+        x = x / self.classifier[-1].weight.norm(dim=1)
+        return x

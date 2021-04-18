@@ -147,7 +147,7 @@ class CustomTestTrainer(object):
                 phase_loss += batch_loss / num_batches
                 phase_acc += batch_acc / num_batches
 
-                pbar.set_description("batch loss: " + str(batch_loss))
+                pbar.set_description(f"batch loss: { str(batch_loss)}, batch_acc: {str(batch_acc)}")
 
         return phase_loss, phase_acc
 
@@ -160,13 +160,14 @@ class CustomTestTrainer(object):
         output = self.model(images) # DCNN
         if type(output) is not torch.Tensor:
             output = output[0]
+        _, preds = torch.max(output, 1)
+        batch_acc = torch.sum(preds == target.data).item() / target.shape[0]
         loss = self.__criterion(output, target)
 
-        _, preds = torch.max(output, 1)
         # compute gradient and do optimizer step
         if self.model.training:
             self.__optimizer.zero_grad()
             loss.backward()
             self.__optimizer.step()
 
-        return loss.data.item(), torch.sum(preds == target.data).item()/target.shape[0]
+        return loss.data.item(), batch_acc

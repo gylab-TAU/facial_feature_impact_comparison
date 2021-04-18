@@ -20,10 +20,12 @@ class ArcFace(torch.nn.CrossEntropyLoss):
         :param target: correct labels of each angle data
         :return: CrossEntropyLoss of added margin cosine similarity (rescaled)
         """
+        # input.cpu()
+        # target.cpu()
         index = torch.where(target != -1)[0]
         m_hot = torch.zeros(index.size()[0], input.size()[1], device=input.device)
-        m_hot.scatter_(1, target[index, None], self.m)
+        m_hot.scatter_(1, target[index, None], self.margin)
         input.acos_()
         input[index] += m_hot
-        input.cos_().mul_(self.s)
-        return super(ArcFace, self)(input, target)
+        input.cos_().mul_(self.scale_factor)
+        return super(ArcFace, self).forward(input, target)
