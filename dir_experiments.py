@@ -34,7 +34,7 @@ def run_experiment(config_path):
     print("Running experiment " + config['GENERAL']['experiment_name'])
 
     # Create image loader (by the configuration)
-    im_size = int(config['DATASET']['image_size'])
+    im_size = json.loads(config['DATASET']['image_size'])
     post_crop_im_size = int(config['DATASET']['post_crop_im_size'])
     dataset_means = json.loads(config['DATASET']['dataset_means'])
     dataset_stds = json.loads(config['DATASET']['dataset_stds'])
