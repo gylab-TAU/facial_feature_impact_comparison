@@ -9,7 +9,7 @@ class ImageLoader(object):
         normalize = transforms.Normalize(dataset_mean, dataset_std)
         self.target_transform = target_transform
         self.center_crop_tt = transforms.Compose([
-                transforms.Resize(im_size),
+                transforms.Resize([im_size, im_size]),
                 transforms.CenterCrop(post_crop_size),
                 transforms.ToTensor(),
                 normalize,
@@ -19,7 +19,7 @@ class ImageLoader(object):
         # ratio = (1.0, 1.0)
         # , scale = crop_scale, ratio = ratio
         self.random_crop_tt = transforms.Compose([
-                transforms.Resize(im_size),
+                transforms.Resize([im_size, im_size]),
                 transforms.CenterCrop(post_crop_size),
                 # transforms.RandomResizedCrop(post_crop_size),
                 transforms.RandomHorizontalFlip(),
