@@ -18,10 +18,11 @@ class ImageLoader(object):
         # crop_scale = (1.0, 1.0)
         # ratio = (1.0, 1.0)
         # , scale = crop_scale, ratio = ratio
+        # RandomResizedCrop
         self.random_crop_tt = transforms.Compose([
                 transforms.Resize([im_size, im_size]),
+                transforms.RandomCrop(post_crop_size),
                 transforms.CenterCrop(post_crop_size),
-                # transforms.RandomResizedCrop(post_crop_size),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 normalize,
