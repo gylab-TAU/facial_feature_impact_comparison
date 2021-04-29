@@ -20,7 +20,7 @@ def dataloaders_setup(config, processed_dataset, image_loader):
             image_folder,
             batch_size=int(config['MODELLING']['batch_size']),
             num_workers=int(config['MODELLING']['workers']),
-            shuffle=is_train,
+            shuffle=True,
             pin_memory=True,
             drop_last=False)
 

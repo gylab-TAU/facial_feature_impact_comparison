@@ -29,7 +29,7 @@ class NumClassProcessor(object):
         filtered_dataset_output = os.path.join(self.__output_dataset_dir, f'{dataset_name}_num-classes_{num_classes_to_use}')
 
         if not os.path.exists(filtered_dataset_output):
-            for i in tqdm.tqdm(range(num_classes_to_use), desc='num class filter'):
+            for i in tqdm.c(range(num_classes_to_use), desc='num class filter'):
                 class_dir_paths = glob.glob(os.path.join(raw_dataset_dir, classes_to_use[i]))
                 for class_path in class_dir_paths:
                     data_points = glob.glob(os.path.join(class_path, self.__data_name_filter))

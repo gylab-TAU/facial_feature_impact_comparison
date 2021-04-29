@@ -35,7 +35,7 @@ def run_experiment(config_path):
     print("Running experiment " + config['GENERAL']['experiment_name'])
 
     # Create image loader (by the configuration)
-    im_size = int(config['DATASET']['image_size'])
+    im_size = json.loads(config['DATASET']['image_size'])
     post_crop_im_size = int(config['DATASET']['post_crop_im_size'])
     dataset_means = json.loads(config['DATASET']['dataset_means'])
     dataset_stds = json.loads(config['DATASET']['dataset_stds'])
@@ -87,7 +87,9 @@ def run_experiment(config_path):
 
     lfw_results = lfw_tester.test_performance(trainer.model)
     print(lfw_results)
-
+    lfw_path = os.path.join(config['LFW_TEST']['reps_results_path'], 'logs.csv')
+    os.makedirs(config['LFW_TEST']['reps_results_path'], exist_ok=True)
+    lfw_results.to_csv(lfw_path)
 
     reps_behaviour_extractor = setup_pairs_reps_behaviour(config, image_loader)
     if reps_behaviour_extractor != None:
@@ -97,12 +99,12 @@ def run_experiment(config_path):
 
         results_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'],
                                     config['REP_BEHAVIOUR']['output_filename'] + '.csv')
-        lfw_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'], 'logs.csv')
+
         print('Saving results in ', results_path)
-        os.makedirs(config['REP_BEHAVIOUR']['reps_results_path'], exist_ok=True)
+
         if output is not None:
             output.to_csv(results_path)
-        lfw_results.to_csv(lfw_path)
+
 
 
     end = time.perf_counter()

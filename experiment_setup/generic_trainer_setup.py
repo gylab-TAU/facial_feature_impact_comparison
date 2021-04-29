@@ -7,6 +7,8 @@ from modelling.factories.reflection.generic_lr_scheduler_initializer import Gene
 from modelling.local_model_store import LocalModelStore
 from modelling.performance_logger import PerformanceLogger
 from modelling.performance_logger_stub import PerformanceLoggerStub
+from modelling.factories.arcface.arcface_loss_initializer import ArcFaceCriterionInitializer
+from modelling.factories.arcface.arcface_model_initializier import ArcFaceModelInitializer
 
 
 def get_trainer(config, num_classes, start_epoch, perf_tester=None):
@@ -21,8 +23,8 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
             checkpoint_path = None
 
     trainer_factory = TrainerFactory(
-        ModelInitializer(json.loads(config['MODELLING']['feature_parallelized_architectures'])),
-        GenericCriterionInitializer(),
+        ArcFaceModelInitializer(json.loads(config['MODELLING']['feature_parallelized_architectures'])),
+        ArcFaceCriterionInitializer(),
         GenericOptimizerInitializer(),
         GenericLRSchedulerInitializer(),
         model_store)
@@ -42,6 +44,10 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
 
     perf_logger = get_performance_logger(config)
 
+    logs_path = None
+    if 'logs_path' in config['MODELLING']:
+        logs_path = config['MODELLING']['logs_path']
+
     trainer = trainer_factory.get_trainer(config['MODELLING']['architecture'],
                                           config['OPTIMIZING']['optimizer'], json.loads(config['OPTIMIZING']['optimizer_params']),
                                           config['MODELLING']['criterion_name'], json.loads(config['MODELLING']['criterion_params']),
@@ -54,7 +60,7 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
                                           performance_threshold=perf_threshold,
                                           num_epochs_to_test=num_epochs_to_test,
                                           num_batches_per_epoch_limit=num_batches_per_epoch_limit, test_type=perf_test_name,
-                                          perf_logger=perf_logger)
+                                          perf_logger=perf_logger, logs_path=logs_path)
 
     return trainer
 
