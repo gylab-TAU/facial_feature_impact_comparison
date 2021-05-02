@@ -12,4 +12,7 @@ def freeze_layers(model: torch.nn.modules.Module, freeze_end_layer_index: int):
         if i < freeze_end_layer_index:
             for param in mod.parameters():
                 param.requires_grad = False
+        else:
+            for param in mod.parameters():
+                param.requires_grad = True
     return model

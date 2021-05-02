@@ -3,9 +3,9 @@ import torchvision.datasets
 
 
 class FinetuningDataset(torch.utils.data.Dataset):
-    def __init__(self, dataset: torchvision.datasets.ImageFolder, prior_dataset_length):
+    def __init__(self, dataset: torchvision.datasets.ImageFolder, prior_dataset_length: int):
         self.inner = dataset
-        self.prior_dataset_length
+        self.prior_dataset_length = prior_dataset_length
 
     def __getitem__(self, idx):
         image, cl = self.inner[idx]

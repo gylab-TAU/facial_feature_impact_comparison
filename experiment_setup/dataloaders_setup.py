@@ -14,7 +14,7 @@ def dataloaders_setup(config, processed_dataset, image_loader):
         ds_path = os.path.join(processed_dataset, phase)
         image_folder = image_loader.load_dataset(ds_path, center_crop=not is_train)
         if 'FINETUNING' in config:
-            image_folder = data_prep.Datasets.finetuning_dataset.FinetuningDataset(image_folder)
+            image_folder = data_prep.Datasets.finetuning_dataset.FinetuningDataset(image_folder, int(config['MODELLING']['num_classes']))
         print(len(image_folder))
         dataloaders[phase] = data.DataLoader(
             image_folder,

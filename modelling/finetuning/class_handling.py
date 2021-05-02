@@ -12,23 +12,25 @@ def append_classes(model: torch.nn.modules.Module, num_new_classes):
     last_layer = None
     for layer in model.modules():
         last_layer = layer
-    assert type(last_layer) != torch.nn.modules.Linear
-
+    assert type(last_layer) == torch.nn.modules.linear.Linear
+    addition = torch.nn.modules.linear.Linear(last_layer.in_features, num_new_classes, last_layer.bias is not None)
+    if torch.has_cuda:
+        addition.cuda();
     # weights:
-    device = last_layer.weight.device
 
-    new_classes_weight = torch.Tensor(num_new_classes, last_layer.in_features, device=device)
-    old_classes_weight = last_layer.weight.data
-    joined_classes_weight = torch.cat((old_classes_weight, new_classes_weight))
+    joined_classes_weight = torch.cat((last_layer.weight.data, addition.weight.data))
 
     #bias:
-    device = last_layer.bias.device
+    # device = last_layer.bias.device
+    #
+    # if torch.has_cuda:
+    #     new_classes_bias = torch.cuda.FloatTensor(num_new_classes)
+    # else:
+    #     new_classes_bias = torch.FloatTensor(num_new_classes)
 
-    new_classes_bias = torch.Tensor(num_new_classes, device=device)
-    old_classes_bias = last_layer.bias.data
-    joined_classes_bias = torch.cat((old_classes_bias, new_classes_bias))
+    joined_classes_bias = torch.cat((last_layer.bias.data, addition.bias.data))
 
-    torch.weight = torch.nn.Parameter(joined_classes_weight)
-    torch.bias = torch.nn.Parameter(joined_classes_bias)
+    last_layer.weight = torch.nn.Parameter(joined_classes_weight)
+    last_layer.bias = torch.nn.Parameter(joined_classes_bias)
 
     return model

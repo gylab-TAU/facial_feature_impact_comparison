@@ -26,7 +26,7 @@ class TrainerFactory(object):
                     performance_threshold: float = 1,
                     num_epochs_to_test: int = None,
                     num_batches_per_epoch_limit: int = 0, test_type: str = 'None',
-                    perf_logger=None, logs_path=None):
+                    perf_logger=None, logs_path=None, finetuning: bool = False):
 
         use_arcface = (criterion_name.lower() == 'arcface')
         model = self.model_initializer.get_model(arch, is_pretrained, num_classes, use_arcface)
@@ -35,7 +35,10 @@ class TrainerFactory(object):
 
         acc = 0
         if checkpoint is not None:
-            model, optimizer, acc, epoch = self.model_store.load_model_and_optimizer_loc(model, optimizer, checkpoint)
+            if finetuning:
+                model, optimizer, acc, epoch = self.model_store.load_model_and_optimizer_loc(model, None, checkpoint)
+                optimizer = self.optimizer_initializer.get_optimizer(optimizer_name, model, optimizer_params)
+                epoch = 0
         elif epoch != 0:
             model, optimizer, acc, epoch = self.model_store.load_model_and_optimizer(model, optimizer, epoch - 1)
 

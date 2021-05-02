@@ -15,4 +15,6 @@ class GenericLRSchedulerInitializer(object):
         :param last_epoch: the last epoch the model was trained. default -1 if wasn't trained yet.
         :return: the scheduler object
         """
+        if scheduler_name == 'ReduceLROnPlateau':
+            return optim.lr_scheduler.__dict__[scheduler_name](optimizer=optimizer, **params)
         return optim.lr_scheduler.__dict__[scheduler_name](optimizer=optimizer, last_epoch=last_epoch, **params)

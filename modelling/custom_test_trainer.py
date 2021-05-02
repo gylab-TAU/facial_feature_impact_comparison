@@ -49,7 +49,10 @@ class CustomTestTrainer(object):
             self.__log_performance(epoch, const.TRAIN_PHASE)
 
             # print("lr after train: ", self.__lr_scheduler.get_last_lr())
-            self.__lr_scheduler.step()
+            if type(self.__lr_scheduler) == torch.optim.lr_scheduler.ReduceLROnPlateau:
+                self.__lr_scheduler.step(phase_loss)
+            else:
+                self.__lr_scheduler.step()
             # print("lr after train and step: ", self.__lr_scheduler.get_last_lr())
 
             # remember best acc@1 and save checkpoint

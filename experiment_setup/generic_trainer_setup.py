@@ -60,7 +60,7 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
                                           performance_threshold=perf_threshold,
                                           num_epochs_to_test=num_epochs_to_test,
                                           num_batches_per_epoch_limit=num_batches_per_epoch_limit, test_type=perf_test_name,
-                                          perf_logger=perf_logger, logs_path=logs_path)
+                                          perf_logger=perf_logger, logs_path=logs_path, finetuning=('FINETUNING' in config))
 
     return trainer
 
