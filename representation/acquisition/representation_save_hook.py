@@ -1,6 +1,7 @@
 import pickle
 import glob
 import os
+import torch.nn as nn
 
 
 class FileSystemHook(object):
@@ -12,6 +13,8 @@ class FileSystemHook(object):
         self.__root_dir = root_dir
         self.__filename = None
         self.__delete_after_load = delete_after_load
+        self.__transform = nn.ReLU() # nn.Softmax(dim=1)
+        self.__transform.cuda()
 
     def set_data_point_key(self, key):
         """
@@ -31,10 +34,10 @@ class FileSystemHook(object):
         """
         input_path = os.path.join(self.__get_data_item_dir(), 'input.pkl')
         output_path = os.path.join(self.__get_data_item_dir(), 'output.pkl')
-
+        
         with open(output_path, 'wb') as f:
             pickle.dump({
-                'rep': output.clone().detach().cpu(),
+                'rep': self.__transform(output).clone().detach().cpu(),
                 'layer': 'output'
             }, f)
 

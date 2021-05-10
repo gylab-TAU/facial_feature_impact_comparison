@@ -78,8 +78,8 @@ def run_experiment(config_path):
     trainer = get_trainer(config, num_classes, start_epoch, lfw_tester)
 
     if 'FINETUNING' in config:
-        model = modelling.finetuning.freeze_layers(trainer.model, int(config['FINETUNING']['freeze_end']))
-        model = modelling.finetuning.append_classes(model, int(config['FINETUNING']['num_classes']))
+        model = modelling.finetuning.append_classes(trainer.model, int(config['FINETUNING']['num_classes']))
+        model = modelling.finetuning.freeze_layers(model, int(config['FINETUNING']['freeze_end']))
         trainer.model = model
 
     # Will train the model from start_epoch to (end_epoch - 1) with the given dataloaders
@@ -87,7 +87,7 @@ def run_experiment(config_path):
 
     lfw_results = lfw_tester.test_performance(trainer.model)
     print(lfw_results)
-    lfw_path = os.path.join(config['LFW_TEST']['reps_results_path'], 'logs.csv')
+    lfw_path = os.path.join(config['LFW_TEST']['reps_results_path'], config['LFW_TEST']['output_filename'])
     os.makedirs(config['LFW_TEST']['reps_results_path'], exist_ok=True)
     lfw_results.to_csv(lfw_path)
 
