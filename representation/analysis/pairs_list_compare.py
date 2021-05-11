@@ -25,10 +25,7 @@ class PairsListComparer(object):
         for i in tqdm(range(len(pairs_list)), desc=progress_label):
             try:
                 im1_path = pairs_list[i][0]
-
                 im2_path = pairs_list[i][1]
-                if 'dd_ref' in im1_path and 'duchov' in im2_path:
-                    x=1
 
                 im1_path = os.path.join(dataset_dir, im1_path)
                 im2_path = os.path.join(dataset_dir, im2_path)

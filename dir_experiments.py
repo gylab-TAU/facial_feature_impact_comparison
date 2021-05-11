@@ -14,6 +14,7 @@ from experiment_setup.dataloaders_setup import dataloaders_setup
 from experiment_setup.generic_trainer_setup import get_trainer
 from experiment_setup.pairs_behaviour_setup import setup_pairs_reps_behaviour
 import modelling.finetuning
+import pandas as pd
 from representation.analysis.rep_dist_mat import DistMatrixComparer
 
 
@@ -92,20 +93,18 @@ def run_experiment(config_path):
     lfw_results.to_csv(lfw_path)
 
     reps_behaviour_extractor = setup_pairs_reps_behaviour(config, image_loader)
-    if reps_behaviour_extractor != None:
 
+    if reps_behaviour_extractor is not None:
         output = reps_behaviour_extractor.compare_lists(trainer.model)
 
-
-        results_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'],
-                                    config['REP_BEHAVIOUR']['output_filename'] + '.csv')
-
-        print('Saving results in ', results_path)
-
         if output is not None:
-            output.to_csv(results_path)
+            if type(output) == pd.DataFrame:
+                results_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'],
+                                            config['REP_BEHAVIOUR']['output_filename'] + '.csv')
 
+                print('Saving results in ', results_path)
 
+                output.to_csv(results_path)
 
     end = time.perf_counter()
     print(datetime.datetime.now())
