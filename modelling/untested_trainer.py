@@ -15,6 +15,7 @@ class UntestedTrainer(object):
         self.__num_batches_per_epoch_limit = num_batches_per_epoch_limit
 
     def train_model(self, start_epoch, end_epoch, data_loaders):
+        phase_acc=0
         for epoch in range(start_epoch, end_epoch):
             print(f'Epoch: {epoch}')
 

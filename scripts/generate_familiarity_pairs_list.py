@@ -17,8 +17,8 @@ def get_cl_imgs(cl, root):
     return relall(globall(cl), root)
 
 
-def generate_class_pairs(class_imgs):
-    pairs = npr.choice(class_imgs, (12, 2), replace=False)
+def generate_class_pairs(class_imgs, num_pairs):
+    pairs = npr.choice(class_imgs, (num_pairs, 2), replace=False)
     return pairs
 
 
@@ -46,8 +46,7 @@ def choose_diff(cls_imgs):
     return pairs
 
 
-
-def generate_division_pairs(div_path):
+def generate_division_pairs(div_path: str, num_pairs: int):
     cls = globall(div_path)
     cols = ['img1', 'img2']
     same_pairs = pd.DataFrame(columns=cols)
@@ -56,12 +55,12 @@ def generate_division_pairs(div_path):
 
     for cl in cls:
         cls_imgs = get_cl_imgs(cl, div_path)
-        chosen = npr.choice(cls_imgs, (2, 24), replace = False)
+        chosen = npr.choice(cls_imgs, (2, 2*num_pairs), replace=False)
         same_cls = chosen[0]
         diff_cls = chosen[1]
         all_cls_imgs[cl] = diff_cls.tolist()
 
-        same_pairs = same_pairs.append(pd.DataFrame(generate_class_pairs(same_cls), columns=cols))
+        same_pairs = same_pairs.append(pd.DataFrame(generate_class_pairs(same_cls, num_pairs), columns=cols))
     diff_pairs = pd.DataFrame(choose_diff(all_cls_imgs), columns=cols)
     return same_pairs, diff_pairs
 
@@ -70,9 +69,11 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--classes_dir", type=str,
-                        default="/home/administrator/experiments/familiarity/dataset/processed_finetuning_dataset/phase_perc_size/pretraining_fixed_C_{'train': 220, 'val': 50, 'test': 50}/test/")
+                        default="/home/administrator/experiments/familiarity/dataset/processed_pretraining_dataset/phase_perc_size/pretraining_fixed_{'train': 0.7, 'val': 0.2, 'test': 0.1}/test/")
     parser.add_argument("--output_file", type=str,
-                        default="/home/administrator/experiments/familiarity/dataset/image_pairs_lists/mutualy_exclusive/C")
+                        default="/home/administrator/experiments/familiarity/dataset/image_pairs_lists/mutualy_exclusive/pretraining")
+    parser.add_argument("--num_pairs", type=int,
+                        default=5)
 
     args = parser.parse_args()
     return args

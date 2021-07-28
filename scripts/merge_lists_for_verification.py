@@ -22,7 +22,7 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--pairs_root", type=str,
-                        default="/home/administrator/experiments/familiarity/dataset/image_pairs_lists/mutualy_exclusive/C")
+                        default="/home/administrator/experiments/familiarity/dataset/image_pairs_lists/mutualy_exclusive/pretraining")
 
     args = parser.parse_args()
     return args

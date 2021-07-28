@@ -8,7 +8,11 @@ from representation.analysis.metrics.cosine_distance_compare import CosineDistan
 from representation.analysis.pairs_list_compare import PairsListComparer
 from representation.analysis.multi_list_comparer import MultiListComparer
 from representation.analysis.rep_dist_mat import DistMatrixComparer
+from representation.analysis.metrics.correlated_firing import CountCorrelatedFiring
+from representation.analysis.metrics.normalized_correlated_firing import NormalizedCountCorrelatedFiring
+from representation.analysis.metrics.count_firing import CountFiring
 from representation.activations.activation_acquisition import ActivationAcquisition
+from representation.activations.identification_error_acquitision import IdentificationErrorAcquisition
 from representation.activations.deep_layers_activations import DeepLayersActivations
 from representation.activations.multi_list_activations_acquisition import MultiListAcquisition
 from representation.acquisition.model_layer_dicts.reflection_factory import ReflectionFactory
@@ -17,6 +21,17 @@ from representation.acquisition.model_layer_dicts.reflection_factory import Refl
 def setup_pairs_reps_behaviour(config, image_loader):
     if 'REP_BEHAVIOUR' not in config:
         return
+
+    if 'identification_errors' in config['REP_BEHAVIOUR'] and config['REP_BEHAVIOUR']['identification_errors'] == 'True':
+        ds_path = config['REP_BEHAVIOUR']['activations_dataset']
+        activations_dataset = data.DataLoader(
+            image_loader.load_dataset(ds_path, with_path=True),
+            batch_size=1,
+            num_workers=int(config['REP_BEHAVIOUR']['workers']),
+            shuffle=False,
+            pin_memory=True,
+            drop_last=False)
+        return IdentificationErrorAcquisition(activations_dataset)
 
     if 'activations' in config['REP_BEHAVIOUR'] and config['REP_BEHAVIOUR']['activations'] == 'True':
         ds_path = config['REP_BEHAVIOUR']['activations_dataset']
@@ -53,9 +68,16 @@ def setup_pairs_reps_behaviour(config, image_loader):
         comparison_calc = EuclidianDistanceCompare()
     if config['REP_BEHAVIOUR']['comparison_metric'] == 'cos' or config['REP_BEHAVIOUR']['comparison_metric'] == 'CosineSimilarity':
         comparison_calc = CosineDistanceCompare()
+    if config['REP_BEHAVIOUR']['comparison_metric'] == 'correlated_firing_count':
+        comparison_calc = CountCorrelatedFiring()
+    if config['REP_BEHAVIOUR']['comparison_metric'] == 'normalized_correlated_firing_count':
+        comparison_calc = NormalizedCountCorrelatedFiring()
+    if config['REP_BEHAVIOUR']['comparison_metric'] == 'firing_count':
+        comparison_calc = CountFiring()
+
     if 'dist_mat' in config['REP_BEHAVIOUR'] and config['REP_BEHAVIOUR']['dist_mat'] == 'True':
         return MultiDatasetComparer(json.loads(config['REP_BEHAVIOUR']['datasets']),
-                                    DistMatrixComparer(reps_cache_path, image_loader, comparison_calc, ReflectionFactory()),
+                                    DistMatrixComparer(reps_cache_path, image_loader, comparison_calc, ReflectionFactory().get_dict_extractor(config['REP_BEHAVIOUR']['reps_layers'])),
                                     config['REP_BEHAVIOUR']['reps_results_path'])
 
     else:
@@ -67,7 +89,7 @@ def setup_pairs_reps_behaviour(config, image_loader):
             pairs_types_to_lists[pairs_type] = []
             with open(pairs_paths[pairs_type], 'r') as f:
                 for line in f:
-                    labeled_pair = line.split(' ')
+                    labeled_pair = line.split('	')
                     labeled_pair[1] = labeled_pair[1].replace(os.linesep, '')
                     pairs_types_to_lists[pairs_type].append(labeled_pair)
         pairs_list_comparison = PairsListComparer(reps_cache_path, image_loader, comparison_calc,

@@ -38,6 +38,7 @@ class PhasePercentageProcessor(object):
                 phase_size = int(phase_perc * num_datapoints)
                 phase_data = np.random.choice(reduced_data, phase_size, replace=False)
                 dest_dir = os.path.join(filtered_dataset_output, phase)
+                os.makedirs(os.path.dirname(dest_dir), exist_ok=True)
                 transfer_datapoints(dest_dir, raw_dataset_dir, phase_data)
                 reduced_data = np.setdiff1d(reduced_data, phase_data)
 

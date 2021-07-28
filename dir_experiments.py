@@ -86,11 +86,12 @@ def run_experiment(config_path):
     # Will train the model from start_epoch to (end_epoch - 1) with the given dataloaders
     trainer.train_model(start_epoch, end_epoch, dataloaders)
 
-    lfw_results = lfw_tester.test_performance(trainer.model)
-    print(lfw_results)
-    lfw_path = os.path.join(config['LFW_TEST']['reps_results_path'], config['LFW_TEST']['output_filename'])
-    os.makedirs(config['LFW_TEST']['reps_results_path'], exist_ok=True)
-    lfw_results.to_csv(lfw_path)
+    if lfw_tester is not None:
+        lfw_results = lfw_tester.test_performance(trainer.model)
+        print(lfw_results)
+        lfw_path = os.path.join(config['LFW_TEST']['reps_results_path'], config['LFW_TEST']['output_filename'])
+        os.makedirs(config['LFW_TEST']['reps_results_path'], exist_ok=True)
+        lfw_results.to_csv(lfw_path)
 
     reps_behaviour_extractor = setup_pairs_reps_behaviour(config, image_loader)
 

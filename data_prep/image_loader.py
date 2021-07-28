@@ -1,5 +1,6 @@
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
+from data_prep.Datasets.activations_dataset import ActivationsDatasets
 from PIL import Image
 import torch
 
@@ -31,11 +32,14 @@ class ImageLoader(object):
 
     # TODO: Add a load dir function
     # TODO: Add a load order for debugging purposes
-    def load_dataset(self, dir_path, center_crop=True):
+    def load_dataset(self, dir_path, center_crop=True, with_path=False):
         """Loads a dataset based on a specific structure (dataset/classes/images)"""
+        tt = self.random_crop_tt
         if center_crop:
-            return datasets.ImageFolder(dir_path, self.center_crop_tt, target_transform=self.target_transform)
-        return datasets.ImageFolder(dir_path, self.random_crop_tt, target_transform=self.target_transform)
+            tt = self.center_crop_tt
+        if with_path:
+            return ActivationsDatasets(dir_path, tt, self.target_transform)
+        return datasets.ImageFolder(dir_path, tt, target_transform=self.target_transform)
 
     def load_image(self, image_path, center_crop=True):
         if center_crop:
