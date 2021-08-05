@@ -16,11 +16,35 @@ from representation.activations.identification_error_acquitision import Identifi
 from representation.activations.deep_layers_activations import DeepLayersActivations
 from representation.activations.multi_list_activations_acquisition import MultiListAcquisition
 from representation.acquisition.model_layer_dicts.reflection_factory import ReflectionFactory
+from representation.activations.strongest_activating_image import StrongestActivatingImageRetrieval
+
+from data_prep.Datasets.img_label_path_dataset import ImgLabelPathDataset
+from torchvision import transforms
 
 
 def setup_pairs_reps_behaviour(config, image_loader):
     if 'REP_BEHAVIOUR' not in config:
         return
+
+    if 'strongest_activating_image' in config['REP_BEHAVIOUR'] and config['REP_BEHAVIOUR']['strongest_activating_image'] == 'True':
+        dataset_dir = config['REP_BEHAVIOUR']['dataset_dir']
+
+        center_crop_tt = transforms.Compose([
+            transforms.Resize(json.loads(config['DATASET']['image_size'])),
+            transforms.CenterCrop(int(config['DATASET']['post_crop_im_size'])),
+            transforms.ToTensor(),
+            transforms.Normalize(json.loads(config['DATASET']['dataset_means']),
+                                 json.loads(config['DATASET']['dataset_stds']))
+        ])
+
+        dataset = data.DataLoader(
+            ImgLabelPathDataset(dataset_dir, center_crop_tt),
+            batch_size=int(config['MODELLING']['batch_size']),
+            num_workers=int(config['MODELLING']['workers']),
+            shuffle=False,
+            pin_memory=True,
+            drop_last=False)
+        return StrongestActivatingImageRetrieval(dataset)
 
     if 'identification_errors' in config['REP_BEHAVIOUR'] and config['REP_BEHAVIOUR']['identification_errors'] == 'True':
         ds_path = config['REP_BEHAVIOUR']['activations_dataset']
