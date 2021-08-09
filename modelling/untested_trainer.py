@@ -61,7 +61,7 @@ class UntestedTrainer(object):
         return phase_loss, phase_acc
 
     def __per_batch(self, images, target):
-        if torch.cuda.is_available():
+        if torch.cuda.is_available() and const.DEBUG is False:
             images = images.cuda(non_blocking=True)
             target = target.cuda(non_blocking=True)
 

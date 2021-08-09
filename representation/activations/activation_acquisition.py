@@ -1,6 +1,7 @@
 import torch
 import pandas as pd
 from tqdm import tqdm
+import const
 
 
 class ActivationAcquisition(object):
@@ -34,7 +35,7 @@ class ActivationAcquisition(object):
             return activations_df
 
     def __per_batch(self, model, images, target):
-        if torch.cuda.is_available():
+        if torch.cuda.is_available() and const.DEBUG is False:
             images = images.cuda(non_blocking=True)
             target = target.cuda(non_blocking=True)
 

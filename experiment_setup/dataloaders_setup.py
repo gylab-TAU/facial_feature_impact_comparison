@@ -1,3 +1,6 @@
+import torch.cuda
+
+import const
 from const import TRAIN_PHASE
 import json
 import os
@@ -16,12 +19,14 @@ def dataloaders_setup(config, processed_dataset, image_loader):
         if 'FINETUNING' in config:
             image_folder = data_prep.Datasets.finetuning_dataset.FinetuningDataset(image_folder, int(config['MODELLING']['num_classes']))
         # print(len(image_folder))
+        pin_memory = torch.cuda.is_available() and not const.DEBUG
         dataloaders[phase] = data.DataLoader(
             image_folder,
             batch_size=int(config['MODELLING']['batch_size']),
             num_workers=int(config['MODELLING']['workers']),
             shuffle=True,
-            pin_memory=True,
+            pin_memory=pin_memory,
             drop_last=False)
+
 
     return dataloaders

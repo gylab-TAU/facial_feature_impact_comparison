@@ -2,6 +2,8 @@ import pickle
 import glob
 import os
 import torch.nn as nn
+import torch
+import const
 
 
 class FileSystemHook(object):
@@ -14,7 +16,8 @@ class FileSystemHook(object):
         self.__filename = None
         self.__delete_after_load = delete_after_load
         self.__transform = nn.ReLU() # nn.Softmax(dim=1)
-        self.__transform.cuda()
+        if torch.cuda.is_available() and const.DEBUG is False:
+            self.__transform.cuda()
 
     def set_data_point_key(self, key):
         """

@@ -1,5 +1,6 @@
 import torchvision.models as models
 import torch
+import const
 
 
 class ModelInitializer(object):
@@ -21,14 +22,16 @@ class ModelInitializer(object):
         """
         print("=> creating model '{}'".format(arch))
         model = models.__dict__[arch](pretrained=is_pretrained, num_classes=num_classes)
-        if torch.cuda.is_available():
-
+        if torch.cuda.is_available() and const.DEBUG is False:
             # DataParallel will divide and allocate batch_size to all available GPUs
             if arch in self.feature_parallelized_archs:
                 model.features = torch.nn.DataParallel(model.features)
-                model.cuda()
+                if const.DEBUG is False:
+                    model.cuda()
             else:
-                model = torch.nn.DataParallel(model).cuda()
+                model = torch.nn.DataParallel(model)
+                if const.DEBUG is False:
+                    model.cuda()
         else:
             print('Using CPU, run times may be long.')
 

@@ -4,6 +4,7 @@ from tqdm import tqdm
 import const
 import pandas as pd
 import os
+import mlflow
 
 
 class CustomTestTrainer(object):
@@ -44,7 +45,9 @@ class CustomTestTrainer(object):
             phase_loss, phase_acc = self.__per_phase(epoch, const.TRAIN_PHASE, data_loaders)
             print(f"average loss: {phase_loss}, epoch acc@1: {phase_acc}")
             self.__avg_train_loss.append(phase_loss)
+            mlflow.log_metric('train loss', phase_loss, epoch)
             self.__train_acc.append(phase_acc)
+            mlflow.log_metric('train acc', phase_acc, epoch)
             self.__train_epochs.append(epoch)
             self.__log_performance(epoch, const.TRAIN_PHASE)
 
@@ -69,6 +72,8 @@ class CustomTestTrainer(object):
                 self.__val_epochs.append(epoch)
                 self.__log_performance(epoch, const.VAL_PHASE)
                 print(f"average loss: {phase_loss}, epoch acc@1: {phase_acc}")
+                mlflow.log_metric('val loss', phase_loss, epoch)
+                mlflow.log_metric('val acc', phase_acc, epoch)
 
                 is_best = phase_acc > self.__best_acc1
                 self.__best_acc1 = max(phase_acc, self.__best_acc1)
@@ -112,7 +117,10 @@ class CustomTestTrainer(object):
             self.__lfw_layer.append(layer)
             self.__lfw_thresh.append(threshold)
             self.__log_performance(epoch, 'LFW')
-            print ("layer: ", layer, " accuracy: ", accuracy, " threshold: ", threshold)
+            print("layer: ", layer, " accuracy: ", accuracy, " threshold: ", threshold)
+            mlflow.log_metric(f'depth {layer} verification accuracy', accuracy, epoch)
+            mlflow.log_metric(f'depth {layer} verification threshold', threshold, epoch)
+
             if accuracy > self.__performance_threshold:
                 return layer, accuracy, threshold
 
@@ -155,7 +163,7 @@ class CustomTestTrainer(object):
         return phase_loss, phase_acc
 
     def __per_batch(self, images, target):
-        if torch.cuda.is_available():
+        if torch.cuda.is_available() and const.DEBUG is False:
             images = images.cuda(non_blocking=True)
             target = target.cuda(non_blocking=True)
 

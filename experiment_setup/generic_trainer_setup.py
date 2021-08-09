@@ -1,4 +1,5 @@
 import json
+import mlflow
 from modelling.factories.parameterized_trainer_factory import TrainerFactory
 from modelling.factories.model_initializer import ModelInitializer
 from modelling.factories.reflection.generic_criterion_initializer import GenericCriterionInitializer
@@ -18,9 +19,11 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
     checkpoint_path_param_name = 'checkpoint_path'
     checkpoint_path = None
     if checkpoint_path_param_name in config['MODELLING']:
-        checkpoint_path = config['MODELLING'][checkpoint_path_param_name ]
+        checkpoint_path = config['MODELLING'][checkpoint_path_param_name]
         if checkpoint_path == '':
             checkpoint_path = None
+        else:
+            mlflow.log_param('checkpoint_path', checkpoint_path)
 
     trainer_factory = TrainerFactory(
         ArcFaceModelInitializer(json.loads(config['MODELLING']['feature_parallelized_architectures'])),
@@ -32,10 +35,13 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
     perf_threshold = None
     num_epochs_to_test = None
     num_batches_per_epoch_limit = int(config['MODELLING']['num_batches_per_epoch_limit'])
+    mlflow.log_param('num_batches_per_epoch_limit', num_batches_per_epoch_limit)
 
     if perf_tester is not None:
         perf_threshold = float(config['MODELLING']['perf_threshold'])
+        mlflow.log_param('perf_threshold', perf_threshold)
         num_epochs_to_test = int(config['MODELLING']['num_epochs_to_test'])
+        mlflow.log_param('num_epochs_to_test', num_epochs_to_test)
 
     perf_test_param_name = 'performance_test'
     perf_test_name = 'None'

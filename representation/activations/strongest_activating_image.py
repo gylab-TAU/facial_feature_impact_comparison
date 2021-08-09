@@ -1,5 +1,6 @@
 import torch
 import pandas as pd
+import const
 from tqdm import tqdm
 
 class StrongestActivatingImageRetrieval(object):
@@ -12,7 +13,8 @@ class StrongestActivatingImageRetrieval(object):
         model.train(False)
         with torch.no_grad():
             for imgs, labels, paths in tqdm(self.dataset, desc='strongest activating images search'):
-                imgs.cuda(non_blocking=True)
+                if const.DEBUG is False:
+                    imgs.cuda(non_blocking=True)
                 scores = model(imgs)
                 for i in range(imgs.size()[0]):
                     l = int(labels[i])

@@ -1,5 +1,6 @@
 import torch
 import os
+import mlflow
 
 
 class LocalModelStore(object):
@@ -17,6 +18,7 @@ class LocalModelStore(object):
                 'optimizer': optimizer.state_dict()}, f)
             if is_best:
                 self.save_model(model, optimizer, epoch, acc, False)
+        mlflow.log_artifact(path)
 
     def load_model_and_optimizer(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, epoch: int = -1):
         path = self.__get_model_path(self.__get_model_filename(epoch, epoch == -1))

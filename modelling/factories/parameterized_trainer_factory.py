@@ -1,3 +1,4 @@
+import mlflow
 from modelling.custom_test_trainer import CustomTestTrainer
 from modelling.performance_logger_stub import PerformanceLoggerStub
 from modelling.standard_test_trainer import StandardTestTrainer
@@ -27,6 +28,13 @@ class TrainerFactory(object):
                     num_epochs_to_test: int = None,
                     num_batches_per_epoch_limit: int = 0, test_type: str = 'None',
                     perf_logger=None, logs_path=None, finetuning: bool = False):
+        mlflow.log_param('optimizer', optimizer_name)
+        mlflow.log_params(optimizer_params)
+        mlflow.log_param('criterion', criterion_name)
+        mlflow.log_params(criterion_params)
+        mlflow.log_param('lr_scheduler', lr_scheduler_name)
+        mlflow.log_params(lr_scheduler_params)
+        mlflow.log_param('is_pretrained', is_pretrained)
 
         use_arcface = (criterion_name.lower() == 'arcface')
         model = self.model_initializer.get_model(arch, is_pretrained, num_classes, use_arcface)

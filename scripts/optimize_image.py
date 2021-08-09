@@ -6,6 +6,7 @@ from modelling.local_model_store import LocalModelStore
 import argparse
 from PIL import Image
 from tqdm import tqdm
+import const
 
 
 def get_args():
@@ -46,7 +47,7 @@ def load_image(im_path: str) -> Tensor:
     im1t = img_to_tensor(im1)
     im1t = im1t.unsqueeze(0)
 
-    if torch.cuda.is_available():
+    if torch.cuda.is_available() and const.DEBUG is False:
         im1t = im1t.cuda()
 
     return im1t
@@ -97,6 +98,7 @@ if __name__ == '__main__':
     output_dir = os.path.join(args.output_path, str(cls), im_name)
     os.makedirs(output_dir, exist_ok=True)
     model.features = nn.DataParallel(model.features)
-    model.cuda()
+    if const.DEBUG is False:
+        model.cuda()
     LocalModelStore(args.architecture, args.experiment_name, None).load_model_and_optimizer_loc(model=model, model_location=args.model_weights_path)
     optimize_image(model, cls, image, args.iters, output_dir, freq=args.freq)

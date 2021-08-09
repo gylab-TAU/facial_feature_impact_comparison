@@ -1,5 +1,6 @@
 import torch
 import torch.nn
+import const
 
 
 class GenericCriterionInitializer(object):
@@ -14,6 +15,6 @@ class GenericCriterionInitializer(object):
         :return: the initialized criterion - set on available device
         """
         criterion = torch.nn.__dict__[criterion_name](**parameters)
-        if torch.cuda.is_available():
+        if torch.cuda.is_available() and const.DEBUG is False:
             criterion = criterion.cuda()
         return criterion

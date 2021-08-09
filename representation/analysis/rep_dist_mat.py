@@ -8,6 +8,7 @@ import os.path
 from tqdm import tqdm
 import torch.utils.data as data
 from data_prep.Datasets.comparison_dataset import ComparisonDataset
+import const
 
 
 class DistMatrixComparer(object):
@@ -37,7 +38,7 @@ class DistMatrixComparer(object):
 
         for im1, im1_path in tqdm(dl, desc=progress_label):
             im1 = im1[0]
-            if torch.cuda.is_available:
+            if torch.cuda.is_available and const.DEBUG is False:
                 im1.cuda()
             try:
                 row = {}
@@ -49,7 +50,7 @@ class DistMatrixComparer(object):
                 for im2, im2_path in dl:
                     im2 = im2[0]
                     im2_key = os.path.basename(im2_path[0])
-                    if torch.cuda.is_available:
+                    if torch.cuda.is_available and const.DEBUG is False:
                         im2.cuda()
                     point2_rep = re.get_layers_representation(im2, im2_key+"comp")
                     for l in layers_df:

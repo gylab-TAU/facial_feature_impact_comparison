@@ -8,6 +8,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from PIL import Image
 import torch
+import const
 
 
 SHAPE_PREDICTOR_PATH = '/home/administrator/experiments/high_importance_features/shape_predictor_68_face_landmarks.dat'
@@ -52,7 +53,8 @@ class DlibAlignerImageLoader(object):
 		im1t = im1t.unsqueeze(0)
 
 		if torch.cuda.is_available():
-			im1t = im1t.cuda()
+			if const.DEBUG is False:
+				im1t = im1t.cuda()
 		return im1t
 
 

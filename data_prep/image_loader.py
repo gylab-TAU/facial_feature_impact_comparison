@@ -3,6 +3,7 @@ import torchvision.datasets as datasets
 from data_prep.Datasets.activations_dataset import ActivationsDatasets
 from PIL import Image
 import torch
+import const
 
 
 class ImageLoader(object):
@@ -56,6 +57,6 @@ class ImageLoader(object):
         im1t = tt(im1)
         im1t = im1t.unsqueeze(0)
 
-        if torch.cuda.is_available():
+        if torch.cuda.is_available() and const.DEBUG is False:
             im1t = im1t.cuda()
         return im1t

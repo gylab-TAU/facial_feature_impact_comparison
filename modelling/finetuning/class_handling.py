@@ -1,4 +1,5 @@
 import torch
+import const
 
 
 def append_classes(model: torch.nn.modules.Module, num_new_classes):
@@ -14,8 +15,8 @@ def append_classes(model: torch.nn.modules.Module, num_new_classes):
         last_layer = layer
     assert type(last_layer) == torch.nn.modules.linear.Linear
     addition = torch.nn.modules.linear.Linear(last_layer.in_features, num_new_classes, last_layer.bias is not None)
-    if torch.has_cuda:
-        addition.cuda();
+    if torch.has_cuda and const.DEBUG is False:
+        addition.cuda()
     # weights:
 
     joined_classes_weight = torch.cat((last_layer.weight.data, addition.weight.data))

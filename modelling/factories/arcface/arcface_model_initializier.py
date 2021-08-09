@@ -1,6 +1,7 @@
 from modelling.models.arcvgg import ArcVGG
 from modelling.factories.model_initializer import ModelInitializer
 import torch
+import const
 
 
 class ArcFaceModelInitializer(ModelInitializer):
@@ -18,9 +19,12 @@ class ArcFaceModelInitializer(ModelInitializer):
                     # DataParallel will divide and allocate batch_size to all available GPUs
                     if arch in self.feature_parallelized_archs:
                         model.features = torch.nn.DataParallel(model.features)
-                        model.cuda()
+                        if const.DEBUG is False:
+                            model.cuda()
                     else:
-                        model = torch.nn.DataParallel(model).cuda()
+                        model = torch.nn.DataParallel(model)
+                        if const.DEBUG is False:
+                            model.cuda()
         else:
             model = super(ArcFaceModelInitializer, self).get_model(arch, is_pretrained, num_classes)
         return model
