@@ -1,6 +1,7 @@
 import pandas as pd
 import const
 
+
 class PerformanceTester(object):
     def __init__(self, representation_performance_analyzer, pairs_list_comparison):
         self.__rep_perf_analyzer = representation_performance_analyzer
