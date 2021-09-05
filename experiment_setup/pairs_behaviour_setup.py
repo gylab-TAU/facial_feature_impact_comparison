@@ -113,7 +113,8 @@ def setup_pairs_reps_behaviour(config, image_loader):
             pairs_types_to_lists[pairs_type] = []
             with open(pairs_paths[pairs_type], 'r') as f:
                 for line in f:
-                    labeled_pair = line.split('	')
+                    labeled_pair = line.split(' ')
+                    print(labeled_pair)
                     labeled_pair[1] = labeled_pair[1].replace(os.linesep, '')
                     pairs_types_to_lists[pairs_type].append(labeled_pair)
         pairs_list_comparison = PairsListComparer(reps_cache_path, image_loader, comparison_calc,
