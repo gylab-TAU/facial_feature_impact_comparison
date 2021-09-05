@@ -12,8 +12,10 @@ class ImageLoader(object):
         self.target_transform = target_transform
         self.center_crop_tt = transforms.Compose([
                 transforms.Resize(im_size),
+
                 transforms.CenterCrop(post_crop_size),
                 transforms.ToTensor(),
+                # transforms.RandomErasing(p=1.0),
                 normalize,
             ])
         # if crop_scale is None:
@@ -23,6 +25,9 @@ class ImageLoader(object):
         # RandomResizedCrop
         self.random_crop_tt = transforms.Compose([
                 transforms.Resize(im_size),
+                transforms.CenterCrop(256),  # For dlib -> mtcnn scaling
+                #transforms.Resize([350, 350]), transforms.CenterCrop(256),
+                transforms.RandomResizedCrop(post_crop_size),
                 transforms.RandomCrop(post_crop_size),
                 transforms.CenterCrop(post_crop_size),
                 # transforms.RandomResizedCrop(post_crop_size),

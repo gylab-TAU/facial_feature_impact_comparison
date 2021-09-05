@@ -8,7 +8,9 @@ import datetime
 import os
 import configparser
 import json
-from data_prep.image_loader import ImageLoader
+# from data_prep.image_loader import ImageLoader
+from data_prep.var_transform_image_loader import ImageLoader
+from data_prep.transforms_config import get_transforms
 from modelling.local_model_store import LocalModelStore
 from experiment_setup.lfw_test_setup import get_lfw_test
 from experiment_setup.dataset_filters_setup import setup_dataset_filter
@@ -25,7 +27,7 @@ mlflow.set_tracking_uri(const.MLFLOW_TRACKING_URI)
 def get_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--config_path", type=str, default=CONFIG_PATH)
+    parser.add_argument("--config_path", type=str, default=CONFIG_PATH) #
     parser.add_argument("--config_dir", type=str, default=None)
     parser.add_argument("--debug", type=bool, default=const.DEBUG)
 
@@ -51,7 +53,10 @@ def run_experiment(config_path):
         # Create image loader (by the configuration)
         im_size = json.loads(config['DATASET']['image_size'])
         mlflow.log_param('image_size', im_size)
-        post_crop_im_size = int(config['DATASET']['post_crop_im_size'])
+        if 'post_crop_im_size' in config['DATASET']:
+            post_crop_im_size = int(config['DATASET']['post_crop_im_size'])
+        elif 'net_input_size' in config['DATASET']:
+            post_crop_im_size = int(config['DATASET']['net_input_size'])
         mlflow.log_param('post_crop_im_size', post_crop_im_size)
         dataset_means = json.loads(config['DATASET']['dataset_means'])
         mlflow.log_param('dataset_means', dataset_means)
@@ -61,7 +66,7 @@ def run_experiment(config_path):
         if 'crop_scale' in config['DATASET']:
             crop_scale = json.loads(config['DATASET']['crop_scale'])
             crop_scale = (crop_scale['max'], crop_scale['min'])
-        image_loader = ImageLoader(im_size, post_crop_im_size, dataset_means, dataset_stds, crop_scale=crop_scale)
+        image_loader = ImageLoader(get_transforms(config['DATASET']))
 
         # Create the dataset filters by config (if they are needed)
         filter = setup_dataset_filter(config)
@@ -99,8 +104,14 @@ def run_experiment(config_path):
         trainer = get_trainer(config, num_classes, start_epoch, lfw_tester)
 
         if 'FINETUNING' in config:
+            model = trainer.model
+            print(config['FINETUNING']['classes_mode'])
+            int(config['FINETUNING']['num_classes'])
             mlflow.log_param('finetuning', True)
-            model = modelling.finetuning.append_classes(trainer.model, int(config['FINETUNING']['num_classes']))
+            if config['FINETUNING']['classes_mode'] == 'append':
+                model = modelling.finetuning.append_classes(trainer.model, int(config['FINETUNING']['num_classes']))
+            elif config['FINETUNING']['classes_mode'] == 'replace':
+                model = modelling.finetuning.replace_classes(trainer.model, int(config['FINETUNING']['num_classes']))
             mlflow.log_param('finetuning_classes', int(config['FINETUNING']['num_classes']))
             model = modelling.finetuning.freeze_layers(model, int(config['FINETUNING']['freeze_end']))
             mlflow.log_param('freeze_depth', int(config['FINETUNING']['freeze_end']))

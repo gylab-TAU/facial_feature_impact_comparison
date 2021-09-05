@@ -17,4 +17,6 @@ class GenericLRSchedulerInitializer(object):
         """
         if scheduler_name == 'ReduceLROnPlateau':
             return optim.lr_scheduler.__dict__[scheduler_name](optimizer=optimizer, **params)
+        if last_epoch > 0 and 'initial_lr' not in optimizer.param_groups[0]:
+            optimizer.param_groups[0]['initial_lr'] = optimizer.param_groups[0]['lr']
         return optim.lr_scheduler.__dict__[scheduler_name](optimizer=optimizer, last_epoch=last_epoch, **params)

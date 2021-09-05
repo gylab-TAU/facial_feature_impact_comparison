@@ -37,6 +37,7 @@ class CustomTestTrainer(object):
         self.__lfw_epochs = []
 
     def train_model(self, start_epoch, end_epoch, data_loaders):
+        epoch = start_epoch
         for epoch in range(start_epoch, end_epoch):
             print(f'Epoch: {epoch}')
 
@@ -87,11 +88,12 @@ class CustomTestTrainer(object):
                     print(f'Done in {epoch} epochs')
                     print(perf)
                     return perf
-        print("TEST:")
-        phase_loss, phase_acc = self.__per_phase(epoch, const.TEST_PHASE, data_loaders)
-        print(f"Average loss: {phase_loss}, epoch acc@1: {phase_acc}")
-        mlflow.log_metric('Test loss', phase_loss, epoch)
-        mlflow.log_metric('Test acc', phase_acc, epoch)
+        if const.TEST_PHASE in data_loaders:
+            print("TEST:")
+            phase_loss, phase_acc = self.__per_phase(epoch, const.TEST_PHASE, data_loaders)
+            print(f"Average loss: {phase_loss}, epoch acc@1: {phase_acc}")
+            mlflow.log_metric('Test loss', phase_loss, epoch)
+            mlflow.log_metric('Test acc', phase_acc, epoch)
 
     def __log_performance(self, epoch, perf_type):
         if self.__logs_path is None:

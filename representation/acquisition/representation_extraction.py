@@ -25,5 +25,6 @@ class RepresentationExtractor(object):
                 self.model(data_point)
 
     def __del__(self):
-        for hook in self.removable_hooks:
-            hook.remove()
+        if self.removable_hooks:
+            for hook in self.removable_hooks:
+                hook.remove()

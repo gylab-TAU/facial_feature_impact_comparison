@@ -35,3 +35,15 @@ def append_classes(model: torch.nn.modules.Module, num_new_classes):
     last_layer.bias = torch.nn.Parameter(joined_classes_bias)
 
     return model
+
+
+def replace_classes(model: torch.nn.modules.Module, num_new_classes):
+    last_layer = model.classifier[-1]
+    assert type(last_layer) == torch.nn.modules.linear.Linear
+    replacement = torch.nn.modules.linear.Linear(last_layer.in_features, num_new_classes, last_layer.bias is not None)
+    replacement.train(True)
+    replacement.requires_grad = True
+    if torch.has_cuda and const.DEBUG is False:
+        replacement.cuda()
+    model.classifier[-1] = replacement
+    return model
