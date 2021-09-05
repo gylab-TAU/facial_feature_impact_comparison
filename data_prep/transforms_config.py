@@ -4,6 +4,9 @@ import json
 
 
 def get_transforms(transform_config):
+    if 'transforms_type' not in transform_config:
+        transform_config['transforms_type'] = 'mtcnn'
+        print('transforms_type does not appear in config. Assuming "mtcnn" transforms (standard)')
     if transform_config['transforms_type'] == 'mtcnn':
         im_size = int(transform_config['image_size'])
         input_size = int(transform_config['net_input_size'])
