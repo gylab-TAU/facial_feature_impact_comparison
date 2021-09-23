@@ -29,7 +29,7 @@ def get_args():
 
     parser.add_argument("--config_path", type=str, default=CONFIG_PATH) #
     parser.add_argument("--config_dir", type=str, default=None)
-    parser.add_argument("--debug", type=bool, default=const.DEBUG)
+    parser.add_argument("--debug", action='store_true')
 
     args = parser.parse_args()
     return args

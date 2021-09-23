@@ -86,8 +86,6 @@ def setup_pairs_reps_behaviour(config, image_loader):
                     imgs_types_to_lists[imgs_type].append(im)
         return MultiListAcquisition(imgs_types_to_lists, imgs_dirs, DeepLayersActivations(reps_cache_path, image_loader, get_model_layers_dict))
 
-
-
     if config['REP_BEHAVIOUR']['comparison_metric'] == 'l2' or config['REP_BEHAVIOUR']['comparison_metric'] == 'euclidian':
         comparison_calc = EuclidianDistanceCompare()
     if config['REP_BEHAVIOUR']['comparison_metric'] == 'cos' or config['REP_BEHAVIOUR']['comparison_metric'] == 'CosineSimilarity':
