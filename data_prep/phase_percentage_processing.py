@@ -15,6 +15,8 @@ class PhasePercentageProcessor(object):
         self.class_name_filter = class_name_filter
 
     def process_dataset(self, raw_dataset_dir, dataset_name):
+        print('Running phase percentage size filter for:')
+        print(f'dir: {raw_dataset_dir}')
         class_filter = os.path.join(raw_dataset_dir, self.class_name_filter)
         class_list = glob.glob(class_filter)
 

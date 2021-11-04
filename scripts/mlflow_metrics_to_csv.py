@@ -7,16 +7,18 @@ if __name__ == '__main__':
     mlflow.set_tracking_uri(const.MLFLOW_TRACKING_URI)
     client = mlflow.tracking.MlflowClient()
     metrics = ['train acc', 'train loss', 'val acc', 'val loss']
-    #60 epochs
-    runs = {'2adab52f2c6349fc8556fb572446e44e': 'objects_fc6',
-            'b2b89e5714db424f912c375e281ef1d6': 'objects_conv3',
-            '4ed940a82a304fa096ead388e41bb1ce': 'faces_fc6',
-            '0907a90f93cf47199105b8ea19e69a3d': 'faces_conv3'}
-    # 20 epochs
-    # runs = {'7088abd7a7a544a68dc1243886c12c8f': 'objects_fc6',
-    #         'b6542559ab684dd3b71daa21fce253e6': 'objects_conv3',
-    #         '04563b9bf28246e282287019860d1d92': 'faces_fc6',
-    #         '80f8a01a45594acdb2f05987aab07a13': 'faces_conv3'}
+
+    epochs_to_runs = {60: {'db3c6de633d440ea8986120cd40224b8': 'objects_fc6',
+                            '076a9e88841b4b35acd2649b23b241d1': 'objects_conv3',
+                            'bb2577c175f04300a5aef13f7225a64e': 'faces_fc6',
+                            '68c8aea457be46f6b3f6dd0a6079e8dd': 'faces_conv3'},
+                      20: {'e77bd511e0434882b1bbcc79b1bb0b38': 'objects_fc6',
+                            '72ba103eeb7447c680eba93ed8d50003': 'objects_conv3',
+                            'ef711c6a59224a17952298f1885e60d2': 'faces_fc6',
+                            '40edabe593d04e5192c00435b47ca660': 'faces_conv3'}
+                      }
+
+    runs = epochs_to_runs[epoch]
     cols = []
     for run_id in runs:
         for metric in metrics:
@@ -30,6 +32,8 @@ if __name__ == '__main__':
             col = f"{runs[run_id]}-{metric}"
             metric_hist = client.get_metric_history(run_id, metric)
             for measure in metric_hist:
+                print(measure.step)
+                print(col)
                 df.loc[measure.step][col] = measure.value
     print(df)
-    df.to_csv(f'/home/ssd_storage/experiments/birds/training_metrics_{epoch}_reduce_{epoch-10}.csv')
+    df.to_csv(f'/home/ssd_storage/experiments/individual_birds/training_metrics_{epoch}_reduce_{epoch-10}.csv')

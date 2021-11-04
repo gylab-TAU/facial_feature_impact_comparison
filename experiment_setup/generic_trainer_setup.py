@@ -20,6 +20,7 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
     checkpoint_path = None
     if checkpoint_path_param_name in config['MODELLING']:
         checkpoint_path = config['MODELLING'][checkpoint_path_param_name]
+        print(checkpoint_path)
         if checkpoint_path == '':
             checkpoint_path = None
         else:

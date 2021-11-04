@@ -4,14 +4,14 @@ from tqdm import tqdm
 
 
 def transfer_datapoints(dest_dataset_loc, source_path, data_points):
-    pbar = tqdm(data_points)
-    for point in pbar:
+    # pbar = tqdm(data_points)
+    for point in data_points:
         dest_point = os.path.join(dest_dataset_loc, os.path.relpath(point, source_path))
         os.makedirs(os.path.dirname(dest_point), exist_ok=True)
         try:
             os.symlink(os.path.abspath(point), dest_point)
         except OSError:
-            pbar.set_description("Encountered error on point. Copying...")
+            # pbar.set_description("Encountered error on point. Copying...")
             shutil.copyfile(point, dest_point)
 
 

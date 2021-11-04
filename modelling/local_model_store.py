@@ -31,7 +31,7 @@ class LocalModelStore(object):
             model.load_state_dict(model_checkpoint['state_dict'])
             if optimizer is not None:
                 optimizer.load_state_dict(model_checkpoint['optimizer'])
-
+        print(f"loading weights from {model_location}, acc={model_checkpoint['acc']}, epoch={model_checkpoint['epoch']}")
         return model, optimizer, model_checkpoint['acc'], model_checkpoint['epoch']
 
     def __get_model_filename(self, epoch, is_best):
