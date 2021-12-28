@@ -6,19 +6,22 @@ import numpy as np
 
 
 class NumClassProcessor(object):
-    def __init__(self, min_class, max_class, output_dataset_dir, class_name_filter=os.path.join('*'), data_name_filter='*'):
+    def __init__(self, min_class, max_class, output_dataset_dir, class_name_filter=os.path.join('*'), data_name_filter='*', depth=0):
         self.__min_num_classes = min_class
         self.__max_num_classes = max_class
         self.__class_name_filter = class_name_filter
         self.__output_dataset_dir = output_dataset_dir
         self.__data_name_filter = data_name_filter
+        self.__depth = depth
 
     def process_dataset(self, raw_dataset_dir, dataset_name):
-        class_filter = os.path.join(raw_dataset_dir, self.__class_name_filter)
+        dir_depth = (self.__depth*['*'])
+        class_filter = os.path.join(raw_dataset_dir, *dir_depth, self.__class_name_filter)
         classes_paths = np.array(glob.glob(class_filter))
+
         classes = [os.path.basename(cl) for cl in classes_paths]
         class_names = np.unique(classes, 0)
-        print(class_names)
+        # print(class_names)
         num_classes_to_use = self.__max_num_classes
 
         assert len(class_names) >= self.__min_num_classes
@@ -31,7 +34,7 @@ class NumClassProcessor(object):
 
         if not os.path.exists(filtered_dataset_output):
             for i in tqdm.tqdm(range(num_classes_to_use), desc='num class filter'):
-                class_dir_paths = glob.glob(os.path.join(raw_dataset_dir, classes_to_use[i]))
+                class_dir_paths = glob.glob(os.path.join(raw_dataset_dir, *dir_depth, classes_to_use[i]))
                 for class_path in class_dir_paths:
                     data_points = glob.glob(os.path.join(class_path, self.__data_name_filter))
 

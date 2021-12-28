@@ -8,6 +8,7 @@ from representation.analysis.metrics.cosine_distance_compare import CosineDistan
 from representation.analysis.pairs_list_compare import PairsListComparer
 from representation.analysis.multi_list_comparer import MultiListComparer
 from representation.analysis.rep_dist_mat import DistMatrixComparer
+from representation.analysis.efficient_rdm import EfficientRDM
 from representation.analysis.metrics.correlated_firing import CountCorrelatedFiring
 from representation.analysis.metrics.normalized_correlated_firing import NormalizedCountCorrelatedFiring
 from representation.analysis.metrics.count_firing import CountFiring
@@ -17,6 +18,7 @@ from representation.activations.deep_layers_activations import DeepLayersActivat
 from representation.activations.multi_list_activations_acquisition import MultiListAcquisition
 from representation.acquisition.model_layer_dicts.reflection_factory import ReflectionFactory
 from representation.activations.strongest_activating_image import StrongestActivatingImageRetrieval
+
 
 from data_prep.Datasets.img_label_path_dataset import ImgLabelPathDataset
 from torchvision import transforms
@@ -98,8 +100,16 @@ def setup_pairs_reps_behaviour(config, image_loader):
         comparison_calc = CountFiring()
 
     if 'dist_mat' in config['REP_BEHAVIOUR'] and config['REP_BEHAVIOUR']['dist_mat'] == 'True':
-        return MultiDatasetComparer(json.loads(config['REP_BEHAVIOUR']['datasets']),
-                                    DistMatrixComparer(reps_cache_path, image_loader, comparison_calc, ReflectionFactory().get_dict_extractor(config['REP_BEHAVIOUR']['reps_layers'])),
+        datasets = config['REP_BEHAVIOUR']['datasets']
+        # print(datasets)
+
+        # return MultiDatasetComparer(json.loads(datasets),
+        #                             DistMatrixComparer(reps_cache_path, image_loader, comparison_calc, ReflectionFactory().get_dict_extractor(config['REP_BEHAVIOUR']['reps_layers'])),
+        #                             config['REP_BEHAVIOUR']['reps_results_path'])
+        return MultiDatasetComparer(json.loads(datasets),
+                                    EfficientRDM(reps_cache_path, image_loader,
+                                                       ReflectionFactory().get_dict_extractor(
+                                                           config['REP_BEHAVIOUR']['reps_layers'])),
                                     config['REP_BEHAVIOUR']['reps_results_path'])
 
     else:

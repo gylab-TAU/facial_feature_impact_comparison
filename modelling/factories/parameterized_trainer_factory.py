@@ -44,7 +44,7 @@ class TrainerFactory(object):
         acc = 0
         print(checkpoint)
         if checkpoint != None:
-            model, optimizer, acc, epoch = self.model_store.load_model_and_optimizer_loc(model, optimizer, checkpoint)
+            model, _, acc, epoch = self.model_store.load_model_and_optimizer_loc(model, None, checkpoint)
             if finetuning:
                 model, optimizer, acc, epoch = self.model_store.load_model_and_optimizer_loc(model, None, checkpoint)
                 optimizer = self.optimizer_initializer.get_optimizer(optimizer_name, model, optimizer_params)

@@ -22,7 +22,7 @@ def freeze_layers(model: torch.nn.modules.Module, freeze_end_layer_index: int):
     for i, mod in enumerate(model.modules()):
         for param in mod.parameters():
             if param.requires_grad:
-                print(f"Training layer: idx={i}, type={mod}, from_end={layers-i}")
+                # print(f"Training layer: idx={i}, type={mod}, from_end={layers-i}")
                 break
             else:
                 break

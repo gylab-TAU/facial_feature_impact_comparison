@@ -2,6 +2,7 @@ import os
 import glob
 from data_prep.util import transfer_datapoints
 import numpy as np
+from tqdm import tqdm
 
 
 class PhaseSizeProcessor(object):
@@ -29,10 +30,11 @@ class PhaseSizeProcessor(object):
 
         num_classes_to_use = 0
 
-        for i in range(max_classes):
+        for i in tqdm(range(max_classes), desc='phase size filter'):
             class_name = os.path.basename(class_list[i])
             class_dir_path = class_list[i]
             data_points = glob.glob(os.path.join(class_dir_path, self.data_name_filter))
+
             num_datapoints = len(data_points)
 
             if num_datapoints >= min_data_point:

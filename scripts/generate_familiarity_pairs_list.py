@@ -71,7 +71,7 @@ def get_args():
     parser.add_argument("--classes_dir", type=str,
                         default="/home/administrator/experiments/familiarity/dataset/processed_pretraining_dataset/phase_perc_size/pretraining_fixed_{'train': 0.7, 'val': 0.2, 'test': 0.1}/test/")
     parser.add_argument("--output_file", type=str,
-                        default="/home/administrator/experiments/familiarity/dataset/image_pairs_lists/mutualy_exclusive/pretraining")
+                        default="/home/administrator/experiments/familiarity/dataset/image_pairs_lists/mutualy_exclusive/pretraining_test")
     parser.add_argument("--num_pairs", type=int,
                         default=5)
 
@@ -82,6 +82,6 @@ def get_args():
 
 if __name__ == '__main__':
     args = get_args()
-    same_pairs, diff_pairs = generate_division_pairs(args.classes_dir)
+    same_pairs, diff_pairs = generate_division_pairs(args.classes_dir, args.num_pairs)
     same_pairs.to_csv(args.output_file + "_same.txt", sep=' ', index=False, header=False)
     diff_pairs.to_csv(args.output_file + "_diff.txt", sep=' ', index=False, header=False)

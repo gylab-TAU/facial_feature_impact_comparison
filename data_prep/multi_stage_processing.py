@@ -12,6 +12,7 @@ class MultiStageProcessor(object):
         num_classes = self.__get_initial_num_classes(raw_dataset_dir)
         for filter in self.__filters:
             curr_dataset_dir, num_classes = filter.process_dataset(curr_dataset_dir, curr_dataset_name)
+            print(curr_dataset_dir)
             curr_dataset_name = os.path.basename(curr_dataset_dir)
 
         return curr_dataset_dir, num_classes

@@ -40,6 +40,7 @@ def run_experiment(config_path):
     print(datetime.datetime.now())
     start = time.perf_counter()
     config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+    print(f'Running experiment {config_path}')
     config.read(config_path)
     print("Running experiment " + config['GENERAL']['experiment_name'])
     if mlflow.get_experiment_by_name(config['GENERAL']['experiment_name']) is None:
@@ -120,12 +121,14 @@ def run_experiment(config_path):
         # Will train the model from start_epoch to (end_epoch - 1) with the given dataloaders
         trainer.train_model(start_epoch, end_epoch, dataloaders)
 
-        if lfw_tester is not None:
-            lfw_results = lfw_tester.test_performance(trainer.model)
-            print(lfw_results)
-            lfw_path = os.path.join(config['LFW_TEST']['reps_results_path'], config['LFW_TEST']['output_filename'])
-            os.makedirs(config['LFW_TEST']['reps_results_path'], exist_ok=True)
-            lfw_results.to_csv(lfw_path)
+        flag = False
+        if flag:
+            if lfw_tester is not None:
+                lfw_results = lfw_tester.test_performance(trainer.model)
+                print(lfw_results)
+                lfw_path = os.path.join(config['LFW_TEST']['reps_results_path'], config['LFW_TEST']['output_filename'])
+                os.makedirs(config['LFW_TEST']['reps_results_path'], exist_ok=True)
+                lfw_results.to_csv(lfw_path)
 
         reps_behaviour_extractor = setup_pairs_reps_behaviour(config, image_loader)
 

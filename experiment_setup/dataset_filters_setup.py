@@ -58,11 +58,11 @@ def mtcnn_align_filter_setup(config):
 def class_num_filter_setup(config):
     class_num_filter_output_dir = os.path.join(config['DATASET']['processed_dataset_root'],
                                                config['DATASET']['dataset_size_filter_dir'])
-
+    class_depth = int(config['DATASET']['class_depth'])
     max_num_classes = int(config['DATASET']['max_num_classes'])
     min_num_classes = int(config['DATASET']['min_num_classes'])
 
-    return NumClassProcessor(min_num_classes, max_num_classes, class_num_filter_output_dir)
+    return NumClassProcessor(min_num_classes, max_num_classes, class_num_filter_output_dir, depth=class_depth)
 
 def class_size_filter_setup(config):
     class_num_filter_output_dir = os.path.join(config['DATASET']['processed_dataset_root'],
