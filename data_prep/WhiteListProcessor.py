@@ -5,18 +5,22 @@ from data_prep.util import transfer_datapoints
 
 
 class WhiteListProcessor(object):
-    def __init__(self, output_dataset_dir:str, white_list:list=[]):
+    def __init__(self, output_dataset_dir: str, white_list: list = [], img_dir_is_cls: bool = True):
         self.__output_dataset_dir = output_dataset_dir
         self.__white_list = white_list
+        self.__imgs_dir_is_cls = img_dir_is_cls
 
     def process_dataset(self, raw_dataset_dir, dataset_name):
         num_classes = 0
-        class_dirs = glob.glob(os.path.join(raw_dataset_dir, 'train', '*'))
+        if self.__imgs_dir_is_cls:
+            class_dirs = glob.glob(os.path.join(raw_dataset_dir, '*'))
+        else:
+            class_dirs = glob.glob(os.path.join(raw_dataset_dir, 'train', '*'))
         dest_ds_dir = os.path.join(self.__output_dataset_dir, dataset_name + ' white_list')
 
         if os.path.exists(dest_ds_dir):
             return dest_ds_dir, glob.glob(os.path.join(dest_ds_dir, '*"'))
-
+        print(class_dirs)
         for dir in tqdm.tqdm(class_dirs, desc='white list'):
             cl = os.path.basename(dir)
             if cl in self.__white_list:

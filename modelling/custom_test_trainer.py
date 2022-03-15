@@ -40,18 +40,20 @@ class CustomTestTrainer(object):
 
     def train_model(self, start_epoch, end_epoch, data_loaders):
         epoch = start_epoch
-
+        phase_acc = 0
         # measuring performance on datasets prior to training
-        phase_loss, phase_acc = self.__pre_measurements(const.TRAIN_PHASE, data_loaders)
-        print(f'train init loss {phase_loss}')
-        print(f'train init acc {phase_acc}')
-        mlflow.log_metric('train loss', phase_loss, epoch)
-        mlflow.log_metric('train acc', phase_acc, epoch)
-        phase_loss, phase_acc = self.__pre_measurements(const.VAL_PHASE, data_loaders)
-        print(f'val init loss {phase_loss}')
-        print(f'val init acc {phase_acc}')
-        mlflow.log_metric('val loss', phase_loss, epoch)
-        mlflow.log_metric('val acc', phase_acc, epoch)
+        flag = False
+        if flag:
+            phase_loss, phase_acc = self.__pre_measurements(const.TRAIN_PHASE, data_loaders)
+            print(f'train init loss {phase_loss}')
+            print(f'train init acc {phase_acc}')
+            mlflow.log_metric('train loss', phase_loss, epoch)
+            mlflow.log_metric('train acc', phase_acc, epoch)
+            phase_loss, phase_acc = self.__pre_measurements(const.VAL_PHASE, data_loaders)
+            print(f'val init loss {phase_loss}')
+            print(f'val init acc {phase_acc}')
+            mlflow.log_metric('val loss', phase_loss, epoch)
+            mlflow.log_metric('val acc', phase_acc, epoch)
 
         for epoch in range(start_epoch, end_epoch):
             print(f'Epoch: {epoch}')
@@ -75,11 +77,11 @@ class CustomTestTrainer(object):
             # remember best acc@1 and save checkpoint
             is_best = phase_acc > self.__best_acc1
             self.__best_acc1 = max(phase_acc, self.__best_acc1)
-            # if is_best:
-            #     self.__model_store.save_model(self.model, self.__optimizer, epoch, self.__best_acc1, is_best)
 
             # Testing the model:
             if self.__should_test(epoch+1):
+
+                # Validation testing and logging
                 print("VAL")
                 phase_loss, phase_acc = self.__per_phase(epoch, const.VAL_PHASE, data_loaders)
                 self.__avg_val_loss.append(phase_loss)
@@ -90,12 +92,16 @@ class CustomTestTrainer(object):
                 mlflow.log_metric('val loss', phase_loss, epoch+1)
                 mlflow.log_metric('val acc', phase_acc, epoch+1)
 
+                # Save the model
                 is_best = phase_acc > self.__best_acc1
                 self.__best_acc1 = max(phase_acc, self.__best_acc1)
                 save_start = time.perf_counter()
                 self.__model_store.save_model(self.model, self.__optimizer, epoch, self.__best_acc1, is_best)
+
                 print("save time: ", time.perf_counter()-save_start)
                 bruto_test = time.perf_counter()
+
+                # Run the verification test
                 perf = self.__test_performance(epoch+1)
                 print("bruto test time: ", time.perf_counter()-bruto_test)
                 if perf is not None:
@@ -108,6 +114,11 @@ class CustomTestTrainer(object):
             print(f"Average loss: {phase_loss}, epoch acc@1: {phase_acc}")
             mlflow.log_metric('Test loss', phase_loss, epoch+1)
             mlflow.log_metric('Test acc', phase_acc, epoch+1)
+            is_best = phase_acc > self.__best_acc1
+            self.__best_acc1 = max(phase_acc, self.__best_acc1)
+        if phase_acc == 0:
+            is_best = False
+        self.__model_store.save_model(self.model, self.__optimizer, epoch, self.__best_acc1, is_best)
 
     def __log_performance(self, epoch, perf_type):
         if self.__logs_path is None:
@@ -115,10 +126,10 @@ class CustomTestTrainer(object):
         os.makedirs(self.__logs_path, exist_ok=True)
         if perf_type == const.TRAIN_PHASE:
             pd.DataFrame({'epoch': self.__train_epochs, 'loss': self.__avg_train_loss,
-                          'acc@1': self.__train_acc}).to_csv(os.path.join(self.__logs_path, 'train.csv'))
+                          'acc1': self.__train_acc}).to_csv(os.path.join(self.__logs_path, 'train.csv'))
         elif perf_type == const.VAL_PHASE:
             pd.DataFrame({'epoch': self.__val_epochs, 'loss': self.__avg_val_loss,
-                          'acc@1': self.__val_acc}).to_csv(os.path.join(self.__logs_path, 'val.csv'))
+                          'acc1': self.__val_acc}).to_csv(os.path.join(self.__logs_path, 'val.csv'))
         elif perf_type == 'LFW':
             pd.DataFrame(
                 {'epoch': self.__lfw_epochs, r'same\diff acc': self.__lfw_acc,
@@ -126,26 +137,26 @@ class CustomTestTrainer(object):
 
 
     def __test_performance(self, epoch):
-        return
+        # return
         start_time = time.perf_counter()
         performance_df = self.__performance_tester.test_performance(self.model)
         print("neto test time: ", time.perf_counter() - start_time)
         self.__performance_logger.log_performance(epoch, performance_df)
         for layer in performance_df.index:
-            accuracy = performance_df.loc[layer]['acc@1']
-            threshold = performance_df.loc[layer]['threshold']
-            self.__lfw_epochs.append(epoch)
-            self.__lfw_acc.append(accuracy)
-            self.__lfw_layer.append(layer)
-            self.__lfw_thresh.append(threshold)
-            self.__log_performance(epoch, 'LFW')
-            print("layer: ", layer, " accuracy: ", accuracy, " threshold: ", threshold)
-            mlflow.log_metric(f'depth {layer} verification accuracy', accuracy, epoch+1)
-            mlflow.log_metric(f'depth {layer} verification threshold', threshold, epoch+1)
+            for col in performance_df.columns:
+                metric = performance_df.loc[layer][col]
+                print(f"layer: {layer}, {col}: {metric}")
+                mlflow.log_metric(f'depth {layer} verification {col}', metric, epoch + 1)
+            # threshold = performance_df.loc[layer]['threshold']
+            # self.__lfw_epochs.append(epoch)
+            # self.__lfw_acc.append(accuracy)
+            # self.__lfw_layer.append(layer)
+            # self.__lfw_thresh.append(threshold)
+            # self.__log_performance(epoch, 'LFW')
+            # mlflow.log_metric(f'depth {layer} verification threshold', threshold, epoch+1)
 
-            if accuracy > self.__performance_threshold:
-                return layer, accuracy, threshold
-
+            # if accuracy > self.__performance_threshold:
+            #     return layer, accuracy, threshold
         return None
 
     def __should_test(self, epoch):
@@ -228,6 +239,7 @@ class CustomTestTrainer(object):
         output = self.model(images) # DCNN
         if type(output) is not torch.Tensor:
             output = output[0]
+
         # acc@1 predictions
         _, preds = torch.max(output, 1)
         # accuracy

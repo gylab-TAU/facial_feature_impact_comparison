@@ -12,10 +12,11 @@ import json
 from data_prep.var_transform_image_loader import ImageLoader
 from data_prep.transforms_config import get_transforms
 from modelling.local_model_store import LocalModelStore
-from experiment_setup.lfw_test_setup import get_lfw_test
+# from experiment_setup.lfw_test_setup import get_lfw_test
+from experiment_setup.efficient_lfw_setup import get_lfw_test
 from experiment_setup.dataset_filters_setup import setup_dataset_filter
 from experiment_setup.dataloaders_setup import dataloaders_setup
-from experiment_setup.generic_trainer_setup import get_trainer
+from experiment_setup.triplet_trainer_setup import get_trainer
 from experiment_setup.pairs_behaviour_setup import setup_pairs_reps_behaviour
 import modelling.finetuning
 import pandas as pd
@@ -27,9 +28,9 @@ mlflow.set_tracking_uri(const.MLFLOW_TRACKING_URI)
 def get_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--config_path", type=str, default=CONFIG_PATH) #
-    parser.add_argument("--config_dir", type=str, default=None)
-    parser.add_argument("--debug", action='store_true')
+    parser.add_argument("--config_path", type=str, default=CONFIG_PATH, help='A path to the actual config file to use for the run')
+    parser.add_argument("--config_dir", type=str, default=None, help='A path to the dir containing the configuration files (searches for files ending with .cfg)')
+    parser.add_argument("--debug", action='store_true', help='when using --debug, stops from using the GPU (from most actions) in order to make debugging easier')
 
     args = parser.parse_args()
     return args
@@ -40,15 +41,18 @@ def run_experiment(config_path):
     print(datetime.datetime.now())
     start = time.perf_counter()
     config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
-    print(f'Running experiment {config_path}')
+    print('Running experiment {config_path}')
     config.read(config_path)
+    print()
     print("Running experiment " + config['GENERAL']['experiment_name'])
     if mlflow.get_experiment_by_name(config['GENERAL']['experiment_name']) is None:
         mlflow.create_experiment(config['GENERAL']['experiment_name'], artifact_location=os.path.join(const.MLFLOW_ARTIFACT_STORE, config['GENERAL']['experiment_name']))
     mlflow.set_experiment(config['GENERAL']['experiment_name'])
+    run_name = None
+    if 'run_name' in config['GENERAL']:
+        run_name = config['GENERAL']['run_name']
 
-
-    with mlflow.start_run():
+    with mlflow.start_run(run_name=run_name):
         print(mlflow.get_artifact_uri())
         mlflow.log_artifact(config_path)
         # Create image loader (by the configuration)
@@ -67,6 +71,7 @@ def run_experiment(config_path):
         if 'crop_scale' in config['DATASET']:
             crop_scale = json.loads(config['DATASET']['crop_scale'])
             crop_scale = (crop_scale['max'], crop_scale['min'])
+
         image_loader = ImageLoader(get_transforms(config['DATASET']))
 
         # Create the dataset filters by config (if they are needed)
@@ -80,7 +85,8 @@ def run_experiment(config_path):
         print("training on dataset: ", processed_dataset)
         mlflow.log_param('training_dataset', processed_dataset)
         # Create dataloader for the training
-        dataloaders = dataloaders_setup(config, processed_dataset, image_loader)
+        triplet = config['MODELLING']['criterion_name'].lower() == 'triplet'
+        dataloaders = dataloaders_setup(config, processed_dataset, image_loader, triplet=triplet)
 
         # Get access to pre trained models
         model_store = LocalModelStore(config['MODELLING']['architecture'],
@@ -104,17 +110,21 @@ def run_experiment(config_path):
         # Creating the trainer and loading the pretrained model if specified in the configuration
         trainer = get_trainer(config, num_classes, start_epoch, lfw_tester)
 
+        # If we wish to finetune a pretrained model on the new dataset
         if 'FINETUNING' in config:
             model = trainer.model
             print(config['FINETUNING']['classes_mode'])
-            int(config['FINETUNING']['num_classes'])
+            num_cls = int(config['FINETUNING']['num_classes'])
             mlflow.log_param('finetuning', True)
             if config['FINETUNING']['classes_mode'] == 'append':
-                model = modelling.finetuning.append_classes(trainer.model, int(config['FINETUNING']['num_classes']))
+                model = modelling.finetuning.append_classes(trainer.model, num_cls)
             elif config['FINETUNING']['classes_mode'] == 'replace':
-                model = modelling.finetuning.replace_classes(trainer.model, int(config['FINETUNING']['num_classes']))
-            mlflow.log_param('finetuning_classes', int(config['FINETUNING']['num_classes']))
+                model = modelling.finetuning.replace_classes(trainer.model, num_cls)
+            elif config['FINETUNING']['classes_mode'] == 'overlay':
+                model = modelling.finetuning.overlay_classes(model, num_classes, num_cls)
+            mlflow.log_param('finetuning_classes', num_cls)
             model = modelling.finetuning.freeze_layers(model, int(config['FINETUNING']['freeze_end']))
+            mlflow.log_param('finetuning_classes_mode', config['FINETUNING']['classes_mode'])
             mlflow.log_param('freeze_depth', int(config['FINETUNING']['freeze_end']))
             trainer.model = model
 
@@ -141,7 +151,7 @@ def run_experiment(config_path):
                                                 config['REP_BEHAVIOUR']['output_filename'] + '.csv')
 
                     print('Saving results in ', results_path)
-
+                    os.makedirs(os.path.dirname(results_path), exist_ok=True)
                     output.to_csv(results_path)
                     mlflow.log_artifact(results_path)
 

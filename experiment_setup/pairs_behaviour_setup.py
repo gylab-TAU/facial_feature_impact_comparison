@@ -28,6 +28,7 @@ def setup_pairs_reps_behaviour(config, image_loader):
     if 'REP_BEHAVIOUR' not in config:
         return
 
+
     if 'strongest_activating_image' in config['REP_BEHAVIOUR'] and config['REP_BEHAVIOUR']['strongest_activating_image'] == 'True':
         dataset_dir = config['REP_BEHAVIOUR']['dataset_dir']
 
@@ -106,6 +107,9 @@ def setup_pairs_reps_behaviour(config, image_loader):
         # return MultiDatasetComparer(json.loads(datasets),
         #                             DistMatrixComparer(reps_cache_path, image_loader, comparison_calc, ReflectionFactory().get_dict_extractor(config['REP_BEHAVIOUR']['reps_layers'])),
         #                             config['REP_BEHAVIOUR']['reps_results_path'])
+
+        print("To calculate RDM, currently only using COS distance")
+        print("COSINE DISTANCE")
         return MultiDatasetComparer(json.loads(datasets),
                                     EfficientRDM(reps_cache_path, image_loader,
                                                        ReflectionFactory().get_dict_extractor(
@@ -113,6 +117,7 @@ def setup_pairs_reps_behaviour(config, image_loader):
                                     config['REP_BEHAVIOUR']['reps_results_path'])
 
     else:
+        # Load pairs txt file, and seperate to 2 columns, IM1, IM2
         pairs_image_dirs = json.loads(config['REP_BEHAVIOUR']['pairs_image_dirs'])
         pairs_paths = json.loads(config['REP_BEHAVIOUR']['pairs_paths'])
         pairs_types_to_lists = {}

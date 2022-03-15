@@ -1,4 +1,4 @@
-
+import mlflow
 import os
 
 class MultiDatasetComparer(object):
@@ -15,4 +15,6 @@ class MultiDatasetComparer(object):
             for l in layers_matrices:
                 dir = os.path.join(self.__output_dir, pairs_type)
                 os.makedirs(dir, exist_ok=True)
-                layers_matrices[l].to_csv(os.path.join(dir, l + ".csv"))
+                rdm_path = os.path.join(dir, f'{pairs_type}_{l}.csv')
+                layers_matrices[l].to_csv(rdm_path)
+                mlflow.log_artifact(rdm_path)

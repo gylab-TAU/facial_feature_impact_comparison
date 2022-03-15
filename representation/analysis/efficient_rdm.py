@@ -46,7 +46,7 @@ class EfficientRDM(object):
                 keys.append(im_key)
                 point1_rep = re.get_layers_representation(im, im_key)
                 for l in layers_reps:
-                    t = point1_rep[l].cuda()
+                    t = torch.flatten(point1_rep[l].cuda()).unsqueeze(0)
                     layers_reps[l] = torch.cat([layers_reps[l], t])
 
             except:

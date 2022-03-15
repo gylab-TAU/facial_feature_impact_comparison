@@ -27,10 +27,11 @@ def get_args():
 if __name__ == '__main__':
     args = get_args()
     dirs = {
-        'familiar_bird_species_rdm_30_10': "/home/KAD/project/datasets/processed/phase_perc_size/260_birds_consolidated_{'train': 0.8, 'val': 0.2}/val",
-        'familiar_individual_birds_rdm_30_10': "/home/ssd_storage/datasets/processed/phase_perc_size/only_30_class_species",
-        'familiar_faces_rdm_30_10': "/home/ssd_storage/datasets/processed/num_classes/faces_260_num-classes_260/val",
-        'familiar_inanimate_rdm_30_10': "/home/ssd_storage/datasets/processed/num_classes/260_inanimate_imagenet_num-classes_260/val"
+        # 'familiar_bird_species_rdm_30_10': "/home/KAD/project/datasets/processed/phase_perc_size/260_birds_consolidated_{'train': 0.8, 'val': 0.2}/val",
+        # 'familiar_individual_birds_rdm_30_10': "/home/ssd_storage/datasets/processed/phase_perc_size/only_30_class_species",
+        # 'familiar_faces_rdm_30_10': "/home/ssd_storage/datasets/processed/num_classes/faces_260_num-classes_260/val",
+        # 'familiar_inanimate_rdm_30_10': "/home/ssd_storage/datasets/processed/num_classes/260_inanimate_imagenet_num-classes_260/val",
+        'familiar_max_img_faces_rdm_30_10': "/home/ssd_storage/datasets/processed/30_max_imgs_vggface2_mtcnn white_list_{'train': 0.9, 'val': 0.1}/val"
     }
     for ds_name in dirs:
         print(f'{ds_name}:')

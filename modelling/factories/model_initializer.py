@@ -29,7 +29,7 @@ class ModelInitializer(object):
                 if const.DEBUG is False:
                     model.cuda()
             else:
-                model = torch.nn.DataParallel(model)
+                # model = torch.nn.DataParallel(model)
                 if const.DEBUG is False:
                     model.cuda()
         else:

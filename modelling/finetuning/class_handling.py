@@ -1,5 +1,7 @@
+import torchvision
 import torch
 import const
+from modelling.models.overlaid_classifier import OverlaidClassifier
 
 
 def append_classes(model: torch.nn.modules.Module, num_new_classes):
@@ -38,12 +40,32 @@ def append_classes(model: torch.nn.modules.Module, num_new_classes):
 
 
 def replace_classes(model: torch.nn.modules.Module, num_new_classes):
-    last_layer = model.classifier[-1]
-    assert type(last_layer) == torch.nn.modules.linear.Linear
-    replacement = torch.nn.modules.linear.Linear(last_layer.in_features, num_new_classes, last_layer.bias is not None)
-    replacement.train(True)
-    replacement.requires_grad = True
-    if torch.has_cuda and const.DEBUG is False:
-        replacement.cuda()
-    model.classifier[-1] = replacement
+    if type(model) == torchvision.models.resnet.ResNet:
+        last_layer = model.fc
+        assert type(last_layer) == torch.nn.modules.linear.Linear
+        replacement = torch.nn.modules.linear.Linear(last_layer.in_features, num_new_classes,
+                                                     last_layer.bias is not None)
+        replacement.train(True)
+        replacement.requires_grad = True
+
+        if torch.has_cuda and const.DEBUG is False:
+            replacement.cuda()
+        model.fc = replacement
+        return model
+    if type(model) == torchvision.models.VGG:
+        last_layer = model.classifier[-1]
+        assert type(last_layer) == torch.nn.modules.linear.Linear
+        replacement = torch.nn.modules.linear.Linear(last_layer.in_features, num_new_classes, last_layer.bias is not None)
+        replacement.train(True)
+        replacement.requires_grad = True
+        if torch.has_cuda and const.DEBUG is False:
+            replacement.cuda()
+        model.classifier[-1] = replacement
+        return model
+
+
+def overlay_classes(model: torch.nn.modules.Module, emb_dim: int, num_new_classes: int):
+    model = OverlaidClassifier(model, emb_dim, num_new_classes)
+    if torch.cuda.is_available():
+        model.cuda()
     return model
