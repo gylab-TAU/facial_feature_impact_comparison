@@ -131,7 +131,7 @@ def run_experiment(config_path):
         # Will train the model from start_epoch to (end_epoch - 1) with the given dataloaders
         trainer.train_model(start_epoch, end_epoch, dataloaders)
 
-        flag = False
+        flag = True
         if flag:
             if lfw_tester is not None:
                 lfw_results = lfw_tester.test_performance(trainer.model)
