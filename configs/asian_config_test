@@ -1,0 +1,64 @@
+[DATASET]
+filters = []
+image_size = 256
+net_input_size = 224
+dataset_means = [0.5, 0.5, 0.5]
+dataset_stds = [0.5, 0.5, 0.5]
+raw_dataset_path = /home/administrator/datasets/processed/2_ids_num_changed/2_ids_1_train_50_val
+dataset_name = mandy_faces
+transforms_type = mtcnn
+processed_dataset_root = /home/ssd_storage/datasets/processed
+dataset_size_filter_dir = num_classes
+phase_size_dict = {"train":300, "val": 50}
+
+[MODELLING]
+feature_parallelized_architectures = ["VGG", "vgg11", "vgg11_bn", "vgg13", "vgg13_bn", "vgg16", "vgg16_bn",
+	"vgg19_bn", "vgg19", "AlexNet", "alexnet"]
+architecture = vgg16
+start_epoch = 120
+end_epoch = 120
+is_pretrained = False
+num_classes = 2
+criterion_name = CrossEntropyLoss
+criterion_params = {}
+batch_size = 128
+workers = 4
+performance_test = LFW_TEST
+perf_threshold = 0.99
+num_epochs_to_test = 30
+num_batches_per_epoch_limit = 1000
+
+[OPTIMIZING]
+optimizer = SGD
+optimizer_params = {
+	"lr": 0.01,
+	"momentum": 0.9,
+	"weight_decay": 1e-4}
+lr_scheduler = StepLR
+lr_scheduler_params = {
+	"step_size": 80,
+	"gamma": 0.1}
+
+[GENERAL]
+root_dir = /home/ssd_storage/experiments/MR/results/all_ids/2_ids
+experiment_name = 2_ids_1_img_per_id_val_50
+
+[LFW_TEST]
+labeled_pairs_path = /home/ssd_storage/datasets/MR/Asian_face_dataset/images_pairs_lists/celebs_all_pairs
+reps_cache_path = ${GENERAL:root_dir}/${GENERAL:experiment_name}/lfw/reps/
+comparison_metric = l2
+lfw_dir =/home/ssd_storage/datasets/MR/Asian_face_dataset/Asian_face_dataset/Celebrity/2pics_frontal
+
+[REP_BEHAVIOUR]
+comparison_metric = l2
+reduce_performance = False
+output_filename = comp_fc7_linear_2_ids_1_imgs_asians_lfw
+pairs_paths = {
+	"diff_pairs": "/home/ssd_storage/datasets/MR/Asian_face_dataset/images_pairs_lists/celebs_diff_pairs",
+	"same_pairs": "/home/ssd_storage/datasets/MR/Asian_face_dataset/images_pairs_lists/celebs_same_pairs"}
+pairs_image_dirs = {
+	"diff_pairs": "/home/ssd_storage/datasets/MR/Asian_face_dataset/Asian_face_dataset/Celebrity_mtcnn/2pics_frontal",
+	"same_pairs": "/home/ssd_storage/datasets/MR/Asian_face_dataset/Asian_face_dataset/Celebrity_mtcnn/2pics_frontal"}
+reps_cache_path = ${GENERAL:root_dir}/${GENERAL:experiment_name}/pairs/reps/
+reps_results_path = ${GENERAL:root_dir}/${GENERAL:experiment_name}/${MODELLING:architecture}/results/
+reps_layers = BlauchEquivalentExtractor

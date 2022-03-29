@@ -147,16 +147,16 @@ class CustomTestTrainer(object):
                 metric = performance_df.loc[layer][col]
                 print(f"layer: {layer}, {col}: {metric}")
                 mlflow.log_metric(f'depth {layer} verification {col}', metric, epoch + 1)
-            # threshold = performance_df.loc[layer]['threshold']
-            # self.__lfw_epochs.append(epoch)
-            # self.__lfw_acc.append(accuracy)
-            # self.__lfw_layer.append(layer)
-            # self.__lfw_thresh.append(threshold)
-            # self.__log_performance(epoch, 'LFW')
-            # mlflow.log_metric(f'depth {layer} verification threshold', threshold, epoch+1)
+            threshold = performance_df.loc[layer]['threshold']
+            self.__lfw_epochs.append(epoch)
+            self.__lfw_acc.append(accuracy)
+            self.__lfw_layer.append(layer)
+            self.__lfw_thresh.append(threshold)
+            self.__log_performance(epoch, 'LFW')
+            mlflow.log_metric(f'depth {layer} verification threshold', threshold, epoch+1)
 
-            # if accuracy > self.__performance_threshold:
-            #     return layer, accuracy, threshold
+            if accuracy > self.__performance_threshold:
+                return layer, accuracy, threshold
         return None
 
     def __should_test(self, epoch):
