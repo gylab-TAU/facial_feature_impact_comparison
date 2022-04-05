@@ -11,13 +11,14 @@ class LocalModelStore(object):
         path = self.__get_model_path(self.__get_model_filename(epoch, is_best))
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'bw') as f:
-            torch.save({
-                'epoch': epoch + 1,
-                'state_dict': model.state_dict(),
-                'acc': acc,
-                'optimizer': optimizer.state_dict()}, f)
-            if is_best:
-                self.save_model(model, optimizer, epoch, acc, False)
+            if epoch > 89:
+                torch.save({
+                    'epoch': epoch + 1,
+                    'state_dict': model.state_dict(),
+                    'acc': acc,
+                    'optimizer': optimizer.state_dict()}, f)
+                if is_best:
+                    self.save_model(model, optimizer, epoch, acc, False)
         mlflow.log_artifact(path)
 
     def load_model_and_optimizer(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, epoch: int = -1):

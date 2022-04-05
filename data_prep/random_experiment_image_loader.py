@@ -11,6 +11,7 @@ def list_dir(dir: str):
 
 
 def filter_ids(ids:list, num_pics: int):
+    print('ids: ',len(ids), 'imgs: ',num_pics)
     filtered_ids = []
     for id in ids:
         id_pics = list_dir(id)
@@ -33,6 +34,7 @@ class RandomExperimentImageLoader(ImageLoader):
         return RandomSubsetDataset(dir_path, ids, self.random_crop_tt, target_transform=self.target_transform)
 
     def load_random_dataset(self, dir_path, num_ids: int = 0, num_pics=0, center_crop=True):
+        print('dir path: ', dir_path)
         all_ids = list_dir(dir_path)
         filtered_ids = filter_ids(all_ids, num_pics)
         ids = [os.path.relpath(id, dir_path) for id in choose_ids(filtered_ids, num_ids)]

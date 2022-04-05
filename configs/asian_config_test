@@ -48,17 +48,26 @@ labeled_pairs_path = /home/ssd_storage/datasets/MR/Asian_face_dataset/images_pai
 reps_cache_path = ${GENERAL:root_dir}/${GENERAL:experiment_name}/lfw/reps/
 comparison_metric = l2
 lfw_dir =/home/ssd_storage/datasets/MR/Asian_face_dataset/Asian_face_dataset/Celebrity/2pics_frontal
+output_filename=${GENERAL:experiment_name}_verification_results.csv
+reps_results_path = /home/ssd_storage/experiments/MR/asians/results/accuracy_ORE
+
+labeled_pairs_path = /home/ssd_storage/datasets/MR/Asian_face_dataset/images_pairs_lists/hv_all_pairs
+reps_cache_path = ${GENERAL:root_dir}/${GENERAL:experiment_name}/lfw/reps/
+comparison_metric = l2
+lfw_dir =/home/ssd_storage/datasets/MR/Asian_face_dataset/Asian_face_dataset/Asian_hv_mtcnn_all_together
+output_filename=${GENERAL:experiment_name}_verification_results.csv
+reps_results_path = /home/ssd_storage/experiments/MR/asians/results/small_num_results
 
 [REP_BEHAVIOUR]
 comparison_metric = l2
 reduce_performance = False
 output_filename = comp_fc7_linear_2_ids_1_imgs_asians_lfw
 pairs_paths = {
-	"diff_pairs": "/home/ssd_storage/datasets/MR/Asian_face_dataset/images_pairs_lists/celebs_diff_pairs",
-	"same_pairs": "/home/ssd_storage/datasets/MR/Asian_face_dataset/images_pairs_lists/celebs_same_pairs"}
+	"diff_pairs": "/home/ssd_storage/datasets/MR/Asian_face_dataset/images_pairs_lists/hv_diff_pairs",
+	"same_pairs": "/home/ssd_storage/datasets/MR/Asian_face_dataset/images_pairs_lists/hv_same_pairs"}
 pairs_image_dirs = {
-	"diff_pairs": "/home/ssd_storage/datasets/MR/Asian_face_dataset/Asian_face_dataset/Celebrity_mtcnn/2pics_frontal",
-	"same_pairs": "/home/ssd_storage/datasets/MR/Asian_face_dataset/Asian_face_dataset/Celebrity_mtcnn/2pics_frontal"}
+	"diff_pairs": "/home/ssd_storage/datasets/MR/Asian_face_dataset/Asian_face_dataset/hv_mtcnn_all_together",
+	"same_pairs": "/home/ssd_storage/datasets/MR/Asian_face_dataset/Asian_face_dataset/hv_mtcnn_all_together"}
 reps_cache_path = ${GENERAL:root_dir}/${GENERAL:experiment_name}/pairs/reps/
 reps_results_path = ${GENERAL:root_dir}/${GENERAL:experiment_name}/${MODELLING:architecture}/results/
 reps_layers = BlauchEquivalentExtractor

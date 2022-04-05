@@ -18,7 +18,7 @@ def get_lfw_test(config, image_loader):
 
     # Read the verification pairs txt file, and break to columns of im1, im2, same
     # and build the dataset
-    df = pd.read_csv(labeled_pairs_path, sep=' ', index_col=False, names=['im1', 'im2', 'same'], dtype={'im1': str, 'im2': str, 'same': np.int32})
+    df = pd.read_csv(labeled_pairs_path, sep=' ', index_col=False, header=None, names=['im1', 'im2', 'same'], dtype={'im1': str, 'im2': str, 'same': np.int32})
     pairs_list = df[['im1', 'im2']].to_records(index=False)
     labels_list = df['same'].to_list()
     dataset = VerificationDataset(config['LFW_TEST']['lfw_dir'], pairs_list, image_loader, labels_list)

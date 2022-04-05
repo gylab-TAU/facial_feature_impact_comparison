@@ -1,9 +1,25 @@
 ''' makes a new folder with ids, each with random #num_img images - could be same images or different one'''
 import os, random
 import shutil
+import argparse
+
+
+
+def get_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--src_path", type=str, default=None, help='A path to the src path we want to copy from')
+    parser.add_argument("--dst_path", type=str, default=None, help='A path to the dest path we want to copy to')
+
+    args = parser.parse_args()
+    return args
+
 
 
 class IdNum:
+
+
+
 
     def __init__(self, src_path, num_imgs, dst_path, same):
         self.src_path = src_path
@@ -55,11 +71,18 @@ class IdNum:
 
 
 if __name__ == '__main__':
-    args = None
-    src_path = r"/home/administrator/datasets/processed/100_ids_num_changed/100_ids_50_train_50_val"
-    dst_path = r"/home/administrator/datasets/processed/100_ids_num_changed/100_ids_20_train_50_val"
+    args = get_args()
+    if args.src_path is not None:
+        src_path =args.src_path
+        dst_path = args.dst_path
+    else:
+        print('please enter src and dest paths')
+
+    # args = None
+    # src_path = r"/home/administrator/datasets/processed/100_ids_num_changed/100_ids_50_train_50_val"
+    # dst_path = r"/home/administrator/datasets/processed/2_ids_num_changed_1/2_ids_50_train_50_val"
     same = 0
-    num_imgs = 20
+    num_imgs = 50
 
     new_obj = IdNum(src_path, num_imgs, dst_path, same)
     new_obj.multiply()

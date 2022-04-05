@@ -16,7 +16,7 @@ class VerificationAccTest(object):
             accuracies = all_thresh.mean(dim=1)
             best_thresh_idx = torch.argmax(accuracies)
             best_acc = accuracies[best_thresh_idx]
-            best_thresh = pos_dists[best_thresh_idx]
+            best_thresh = y_scores[best_thresh_idx]
         return [best_acc.item(), best_thresh.item()]
 
     def get_metric_name(self) -> List[str]:

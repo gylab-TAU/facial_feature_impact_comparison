@@ -55,7 +55,8 @@ class EfficientLFW(object):
             if self.__distance == 'cos':
                 distances = 1 - torch.nn.CosineSimilarity(dim=1)(layers_reps1[l], layers_reps2[l])
             elif self.__distance.lower() == 'l2':
-                distances = (layers_reps1[l] - layers_reps2[l]).norm()
+                distances = (layers_reps1[l] - layers_reps2[l]).norm(dim=1)
+
 
             layer_metric = self.__verification_summary.calc_performance(distances, labels)
 
@@ -86,6 +87,7 @@ class EfficientLFW(object):
 
             # For every pair of images in the verification test:
             for im1, im2, im1_path, im2_path, label in tqdm(self.__dataset, desc=self.__progress_label):
+                print(len(self.__dataset.dataset))
                 labels.append(label)
                 # Get the representations
                 point_rep1 = self.__get_img_reps(re, im1, im1_path[0])
