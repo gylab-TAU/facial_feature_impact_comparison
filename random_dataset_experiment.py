@@ -1,5 +1,6 @@
 from const import CONFIG_PATH
 import mlflow
+import pandas as pd
 import const
 import glob
 import argparse
@@ -41,10 +42,10 @@ def run_experiment(config_path):
 
     all_lfw_results = None
     all_output = None
-    experiment_name = config['GENERAL']['experiment_name']
 
 
     for id in num_ids:
+        experiment_name = config['GENERAL']['experiment_name']  +'_'+ str(id) + '_ids'
         config['GENERAL']['root_dir'] = config['GENERAL']['base_root_dir']
         print('before id_folder:',config['GENERAL']['id_folder']  )
         print('base root:',config['GENERAL']['base_root_dir']  )
@@ -55,13 +56,11 @@ def run_experiment(config_path):
         print('base root:',config['GENERAL']['base_root_dir']  )
 
         #mlflow set experiment
-        if mlflow.get_experiment_by_name(config['GENERAL']['experiment_name']) is None:
-            mlflow.create_experiment(config['GENERAL']['experiment_name'], artifact_location=os.path.join(const.MLFLOW_ARTIFACT_STORE, config['GENERAL']['experiment_name']))
-        mlflow.set_experiment(config['GENERAL']['experiment_name'])
+        # if mlflow.get_experiment_by_name(config['GENERAL']['experiment_name']) is None:
+        #     mlflow.create_experiment(config['GENERAL']['experiment_name'], artifact_location=os.path.join(const.MLFLOW_ARTIFACT_STORE, config['GENERAL']['experiment_name']))
+        # mlflow.set_experiment(config['GENERAL']['experiment_name'])
+        mlflow.set_experiment(experiment_name)
         run_name = None
-        if 'run_name' in config['GENERAL']:
-            run_name = config['GENERAL']['run_name']
-
 
         for pic in num_pics:
             for i in range(num_iterations):
@@ -69,6 +68,9 @@ def run_experiment(config_path):
                 print("________  NUM IDS " + str(id) + " ________")
                 print("________ NUM PICS " + str(pic) + " ________")
 
+                #mlflow set run name
+                if 'run_name' in config['GENERAL']:
+                    run_name = config['GENERAL']['run_name'] +'_'+ str(i) +'_'+str(id) +'_'+ str(pic)
 
                 #mlflow set run
                 with mlflow.start_run(run_name=run_name):
@@ -142,7 +144,6 @@ def run_experiment(config_path):
                         all_lfw_results = lfw_results
                     else:
                         all_lfw_results = all_lfw_results.append(lfw_results)
-                    print(lfw_results)
 
                     reps_behaviour_extractor = setup_pairs_reps_behaviour(config, image_loader)
                     if reps_behaviour_extractor != None:
@@ -153,10 +154,13 @@ def run_experiment(config_path):
                         # saving results for the meanwhile
                         results_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'],
                                                     config['REP_BEHAVIOUR']['output_filename'] + '.csv')
+                        #notice lfw_path and all_lfw_path are the same, need to fix
                         lfw_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'], 'logs.csv')
+                        all_lfw_path = os.path.join(config['LFW_TEST']['reps_results_path'], 'lfw_logs.csv')
                         os.makedirs(config['REP_BEHAVIOUR']['reps_results_path'], exist_ok=True)
                         output.to_csv(results_path)
                         lfw_results.to_csv(lfw_path)
+                        all_lfw_results.to_csv(all_lfw_path)
                         if all_output is None:
                             all_output = output
                         else:
@@ -165,7 +169,6 @@ def run_experiment(config_path):
 
 
                 overall_index += 1
-                print(all_output)
                 print('all_lfw_results:',all_lfw_results)
 
     config['GENERAL']['experiment_name'] = experiment_name
