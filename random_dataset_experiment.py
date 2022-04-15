@@ -54,7 +54,7 @@ def run_experiment(config_path):
                                                 config['GENERAL']['id_folder'])
         print('after id_folder:',config['GENERAL']['id_folder']  )
         print('base root:',config['GENERAL']['base_root_dir']  )
-
+        print('experiment name:', experiment_name)
         #mlflow set experiment
         # if mlflow.get_experiment_by_name(config['GENERAL']['experiment_name']) is None:
         #     mlflow.create_experiment(config['GENERAL']['experiment_name'], artifact_location=os.path.join(const.MLFLOW_ARTIFACT_STORE, config['GENERAL']['experiment_name']))
