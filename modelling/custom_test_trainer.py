@@ -224,7 +224,7 @@ class CustomTestTrainer(object):
 
         return phase_loss, phase_acc
 
-    def __per_batch(self, images: torch.Tensor, target: torch.Tensor) -> Tuple[float, float]:
+    def __per_batch(self, images: torch.Tensor, target: torch.Tensor, context_vectors: torch.Tensor) -> Tuple[float, float]:
         """
         Runs the classification loop per batch, assumes classification task
         images - the images the model processes
@@ -234,9 +234,10 @@ class CustomTestTrainer(object):
         if torch.cuda.is_available() and const.DEBUG is False:
             images = images.cuda(non_blocking=True)
             target = target.cuda(non_blocking=True)
+            context_vectors = context_vectors.cuda(non_blocking=True)
 
         # compute output
-        output = self.model(images) # DCNN
+        output = self.model(images, context_vectors) # DCNN
         if type(output) is not torch.Tensor:
             output = output[0]
 
