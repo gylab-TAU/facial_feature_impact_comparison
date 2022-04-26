@@ -23,7 +23,7 @@ class LocalModelStore(object):
 
     def load_model_and_optimizer(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, epoch: int = -1):
         path = self.__get_model_path(self.__get_model_filename(epoch, epoch == -1))
-        # print('load_model_and_optimizer path:', path)
+        print('load_model_and_optimizer path:', path)
         # path = path.replace("_white_", "_asian_")
         return self.load_model_and_optimizer_loc(model, optimizer=optimizer, model_location=path)
 
