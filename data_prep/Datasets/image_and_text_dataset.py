@@ -1,6 +1,10 @@
 import torch
 from torchvision.datasets import ImageFolder
+import numpy as np
 import csv
+
+VECTOR_LEN = 15
+STDEV = 0.75
 
 
 class ImageAndTextDataset(ImageFolder):
@@ -22,8 +26,11 @@ class ImageAndTextDataset(ImageFolder):
         with open(vector_csv_path, 'r') as file:
             reader = csv.reader(file)
             for row in reader:
-                label = row[0]
-                self.context_vectors[int(label)] = torch.Tensor([float(i) for i in row[1:]])
+                context_vector_label = row[0]
+                if context_vector_label == "":
+                    continue
+                self.context_vectors[context_vector_label] = torch.Tensor(
+                    [float(i) for i in row[1:1+VECTOR_LEN]])
 
     def __getitem__(self, idx):
         """
@@ -36,4 +43,10 @@ class ImageAndTextDataset(ImageFolder):
             image = self.transform(image)
         if self.target_transform is not None:
             label = self.target_transform(label)
-        return image, label, self.context_vectors[label]
+
+        context_vector_label = "n" + str(label + 1).zfill(6)
+        # add randomness to the context vector
+        vector = self.context_vectors[context_vector_label] + \
+            np.random.normal(0, STDEV, VECTOR_LEN)
+
+        return image, label, vector
