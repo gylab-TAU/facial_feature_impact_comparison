@@ -1,6 +1,5 @@
 import torch
 from torchvision.datasets import ImageFolder
-import numpy as np
 import csv
 
 VECTOR_LEN = 15
@@ -43,10 +42,9 @@ class ImageAndTextDataset(ImageFolder):
             image = self.transform(image)
         if self.target_transform is not None:
             label = self.target_transform(label)
-
-        context_vector_label = "n" + str(label + 1).zfill(6)
+        context_vector_label = path.split("/")[-2]
         # add randomness to the context vector
         vector = self.context_vectors[context_vector_label] + \
-            np.random.normal(0, STDEV, VECTOR_LEN)
+            torch.normal(mean=0.0, std=STDEV, size=self.context_vectors[context_vector_label].size())
 
         return image, label, vector
