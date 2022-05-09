@@ -5,8 +5,8 @@ import torch.optim as optim
 from data_prep.Datasets.image_and_text_dataset import ImageAndTextDataset
 from modelling.models.context_vgg16 import context_vgg16
 
-PATH_IMAGE_FOLDER_FOR_CHECKING = "/Users/karinarashap/Library/CloudStorage/OneDrive-mail.tau.ac.il/מודלים קוגנטיביים וחישוביים לזיהוי פנים/facial_feature_impact_comparison/tests/raw_test_dataset"
-PATH_CSV = "/Users/karinarashap/Library/CloudStorage/OneDrive-mail.tau.ac.il/מודלים קוגנטיביים וחישוביים לזיהוי פנים/facial_feature_impact_comparison/tests/vector_test.csv"
+PATH_IMAGE_FOLDER_FOR_CHECKING = "raw_test_dataset"
+PATH_CSV = "vector_test.csv"
 
 # simple running to see if the code in context_vgg16 make sense:
 
