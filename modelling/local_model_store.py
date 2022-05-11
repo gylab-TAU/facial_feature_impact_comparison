@@ -5,6 +5,8 @@ import mlflow
 
 class LocalModelStore(object):
     def __init__(self, arch, experiment_name, root_dir):
+        print('root dir:', root_dir)
+        print('experiment_name: ', experiment_name)
         self.__model_store_path = os.path.join(root_dir, experiment_name, arch, 'models')
 
     def save_model(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer, epoch: int, acc: float, is_best: bool):
