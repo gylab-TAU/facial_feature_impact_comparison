@@ -12,21 +12,24 @@ class LocalModelStore(object):
     def save_model(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer, epoch: int, acc: float, is_best: bool):
         path = self.__get_model_path(self.__get_model_filename(epoch, is_best))
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, 'bw') as f:
-            torch.save({
-                'epoch': epoch + 1,
-                'state_dict': model.state_dict(),
-                'acc': acc,
-                'optimizer': optimizer.state_dict()}, f)
-            if is_best:
-                self.save_model(model, optimizer, epoch, acc, False)
-        #saves weights to mlflw
-        # mlflow.log_artifact(path)
+        #save only if the epoch is not 120 (when testing without training start_epoch=end_epoch = 120)
+        if not (epoch==120):
+
+            with open(path, 'bw') as f:
+                torch.save({
+                    'epoch': epoch + 1,
+                    'state_dict': model.state_dict(),
+                    'acc': acc,
+                    'optimizer': optimizer.state_dict()}, f)
+                if is_best:
+                    self.save_model(model, optimizer, epoch, acc, False)
+            #saves weights to mlflw
+            # mlflow.log_artifact(path)
 
     def load_model_and_optimizer(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, epoch: int = -1):
         path = self.__get_model_path(self.__get_model_filename(epoch, epoch == -1))
         print('load_model_and_optimizer path:', path)
-        # path = path.replace("_white_", "_asian_")
+        path = path.replace("_white_", "_asian_")
         return self.load_model_and_optimizer_loc(model, optimizer=optimizer, model_location=path)
 
     def load_model_and_optimizer_loc(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer = None, model_location=None):

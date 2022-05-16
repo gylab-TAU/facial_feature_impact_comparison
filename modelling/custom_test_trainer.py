@@ -118,6 +118,7 @@ class CustomTestTrainer(object):
             self.__best_acc1 = max(phase_acc, self.__best_acc1)
         if phase_acc == 0:
             is_best = False
+        print('self.__num_epochs_to_test:', self.__num_epochs_to_test)
         self.__model_store.save_model(self.model, self.__optimizer, epoch, self.__best_acc1, is_best)
 
     def __log_performance(self, epoch, perf_type):

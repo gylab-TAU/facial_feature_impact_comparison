@@ -45,7 +45,7 @@ def run_experiment(config_path):
 
 
     for id in num_ids:
-        experiment_name = config['GENERAL']['experiment_name']  +'_'+ str(id) + '_ids'
+        experiment_name = config['GENERAL']['base_experiment_name']  +'_'+ str(id) + '_ids'
         config['GENERAL']['root_dir'] = config['GENERAL']['base_root_dir']
         print('before id_folder:',config['GENERAL']['id_folder']  )
         print('base root:',config['GENERAL']['base_root_dir']  )
