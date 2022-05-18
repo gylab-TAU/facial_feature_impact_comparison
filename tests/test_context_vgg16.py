@@ -7,6 +7,8 @@ from modelling.models.context_vgg16 import context_vgg16
 
 PATH_IMAGE_FOLDER_FOR_CHECKING = "raw_test_dataset"
 PATH_CSV = "vector_test.csv"
+# PATH_IMAGE_FOLDER_FOR_CHECKING = "/home/context/dataset/tmptest"
+# PATH_CSV = "/home/context/dataset/classes_with_occupation_vectors_test.csv"
 
 # simple running to see if the code in context_vgg16 make sense:
 
