@@ -57,6 +57,19 @@ class TrainerFactory(object):
         if perf_logger is None:
             perf_logger = PerformanceLoggerStub()
 
+        # if arch == 'context_vgg16':
+        #     return CustomTestTrainer(model,
+        #                              criterion,
+        #                              optimizer,
+        #                              lr_scheduler,
+        #                              self.model_store,
+        #                              best_acc1=acc,
+        #                              performance_tester=performance_tester,
+        #                              accuracy_threshold=performance_threshold,
+        #                              num_epochs_to_test=num_epochs_to_test,
+        #                              num_batches_per_epoch_limit=num_batches_per_epoch_limit,
+        #                              perf_logger=perf_logger, logs_path=logs_path)
+
         if test_type == 'LFW_TEST' and performance_tester != None:
             return CustomTestTrainer(model,
                                      criterion,
@@ -69,8 +82,6 @@ class TrainerFactory(object):
                                      num_epochs_to_test=num_epochs_to_test,
                                      num_batches_per_epoch_limit=num_batches_per_epoch_limit,
                                      perf_logger=perf_logger, logs_path=logs_path)
-
-
         elif test_type == 'standard':
             return StandardTestTrainer(model,
                                        criterion,

@@ -1,5 +1,6 @@
 from modelling.models.arcvgg import ArcVGG
 from modelling.factories.model_initializer import ModelInitializer
+from modelling.models.context_vgg16 import context_vgg16
 import torch
 import const
 
@@ -26,5 +27,8 @@ class ArcFaceModelInitializer(ModelInitializer):
                         if const.DEBUG is False:
                             model.cuda()
         else:
-            model = super(ArcFaceModelInitializer, self).get_model(arch, is_pretrained, num_classes)
+            if arch == 'context_vgg16':
+                return context_vgg16(is_pretrained, num_classes=num_classes)
+            else:
+                model = super(ArcFaceModelInitializer, self).get_model(arch, is_pretrained, num_classes)
         return model

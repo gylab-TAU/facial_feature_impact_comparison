@@ -38,7 +38,7 @@ class ContextVGG(torchvision.models.VGG):
         return x
 
 
-def context_vgg16(pretrained: bool, progress: bool, **kwargs: Any) -> ContextVGG:
+def context_vgg16(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> ContextVGG:
     if pretrained:
         kwargs["init_weights"] = False
     model = ContextVGG(vgg.make_layers(cfg, batch_norm=True), **kwargs)

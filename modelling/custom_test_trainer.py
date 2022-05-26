@@ -135,9 +135,8 @@ class CustomTestTrainer(object):
                 {'epoch': self.__lfw_epochs, r'same\diff acc': self.__lfw_acc,
                  'layer': self.__lfw_layer, 'threshold': self.__lfw_thresh}).to_csv(os.path.join(self.__logs_path, 'lfw.csv'))
 
-
     def __test_performance(self, epoch):
-        # return
+        return
         start_time = time.perf_counter()
         performance_df = self.__performance_tester.test_performance(self.model)
         print("neto test time: ", time.perf_counter() - start_time)
