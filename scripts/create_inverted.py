@@ -9,7 +9,8 @@ import os
 
 def save_inverted(im_path: str, src_dir: str, output_dir: str):
     im_cls_title = os.path.relpath(im_path, src_dir)
-    output_path = os.path.join(output_dir, im_cls_title)
+    output_path = os.path.join(output_dir, 'flipped_'+im_cls_title)
+    print (im_cls_title)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     orig = Image.open(im_path)
@@ -23,7 +24,7 @@ def save_inverted(im_path: str, src_dir: str, output_dir: str):
 
 def invert_dataset(src_dir: str, output_dir: str):
 
-    for img in tqdm(glob(os.path.join(src_dir, '*', '*.jpg'))):
+    for img in tqdm(glob(os.path.join(src_dir, *,'*.JPG'))):
         save_inverted(img, src_dir, output_dir)
 
 
@@ -37,11 +38,11 @@ def get_args():
 
 
 if __name__ == '__main__':
-    dirs = { '/home/administrator/datasets/lfw-align-128' 
+    dirs = {'/home/ssd_storage/datasets/MR/Monkeys/raw'
     }
     for label in dirs:
         src_dir = label
-        inverted_output_dir = f'/home/administrator/datasets/lfw-align-128_inverted'
+        inverted_output_dir = f'/home/ssd_storage/datasets/MR/Monkeys/raw'
         os.makedirs(inverted_output_dir, exist_ok=True)
         invert_dataset(src_dir, inverted_output_dir)
 
