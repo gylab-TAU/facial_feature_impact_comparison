@@ -20,7 +20,7 @@ def dataloaders_setup(config, processed_dataset, image_loader, triplet=False):
         context = None
         if 'context' in config['DATASET']:
             context = config['DATASET']['context']
-        image_folder = image_loader.load_dataset(ds_path, test=not is_train, triplet=triplet, context=context)
+        image_folder = image_loader.load_dataset(ds_path, test=not is_train, triplet=triplet, context_path=context)
         if 'FINETUNING' in config:
             if config['FINETUNING']['classes_mode'] == 'append':
                 image_folder = data_prep.Datasets.finetuning_dataset.FinetuningDataset(image_folder, int(config['MODELLING']['num_classes']))

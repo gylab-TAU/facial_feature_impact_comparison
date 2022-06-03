@@ -212,9 +212,9 @@ class CustomTestTrainer(object):
             data_loader_iter = iter(data_loaders[phase])
             pbar = tqdm(range(num_batches), desc=phase)
             for i in pbar:
-                (images, target) = next(data_loader_iter)
+                (images, target, context_vectors) = next(data_loader_iter)
 
-                batch_loss, batch_acc = self.__per_batch(images, target)
+                batch_loss, batch_acc = self.__per_batch(images, target, context_vectors)
 
                 phase_loss += batch_loss / num_batches
                 phase_acc += batch_acc / num_batches

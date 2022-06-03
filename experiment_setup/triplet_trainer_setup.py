@@ -28,7 +28,8 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
             mlflow.log_param('checkpoint_path', checkpoint_path)
 
     trainer_factory = TripletTrainerFactory(
-        TripletModelInitializer(json.loads(config['MODELLING']['feature_parallelized_architectures'])),
+        # TripletModelInitializer(json.loads(config['MODELLING']['feature_parallelized_architectures'])),
+        ArcFaceModelInitializer(json.loads(config['MODELLING']['feature_parallelized_architectures'])),
         TripletCriterionInitializer(ArcFaceCriterionInitializer()),
         GenericOptimizerInitializer(),
         GenericLRSchedulerInitializer(),
