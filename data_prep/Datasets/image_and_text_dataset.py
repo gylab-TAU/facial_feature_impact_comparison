@@ -3,7 +3,7 @@ from torchvision.datasets import ImageFolder
 import csv
 
 VECTOR_LEN = 15
-STDEV = 0.75
+STDEV = 0
 
 
 class ImageAndTextDataset(ImageFolder):
