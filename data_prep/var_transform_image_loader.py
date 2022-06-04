@@ -2,11 +2,13 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from data_prep.Datasets.activations_dataset import ActivationsDatasets
 from data_prep.Datasets.triplet_dataset import TripletDataset
+from data_prep.Datasets.image_and_text_dataset import ImageAndTextDataset
 
 from PIL import Image
 import torch
 import const
 from const import TRAIN_PHASE, TEST_PHASE
+from typing import Optional
 
 
 class ImageLoader(object):
@@ -17,7 +19,7 @@ class ImageLoader(object):
 
     # TODO: Add a load dir function
     # TODO: Add a load order for debugging purposes
-    def load_dataset(self, dir_path, test=True, with_path=False, triplet=False):
+    def load_dataset(self, dir_path: str, test: bool = True, with_path: bool = False, triplet: bool = False, context_path: Optional[str] = None):
         """Loads a dataset based on a specific structure (dataset/classes/images)"""
         tt = self.train_transforms
         if test:
@@ -26,6 +28,8 @@ class ImageLoader(object):
             return TripletDataset(dir_path, tt)
         if with_path:
             return ActivationsDatasets(dir_path, tt, self.target_transform)
+        if context_path is not None:
+            return ImageAndTextDataset(dir_path, tt, self.target_transform, context_path)
         return datasets.ImageFolder(dir_path, tt, target_transform=self.target_transform)
 
     def load_image(self, image_path, test=True):
