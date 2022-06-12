@@ -18,5 +18,6 @@ class MultiListComparer(object):
                 comparisons_df = type_comparisons_df
             else:
                 comparisons_df = comparisons_df.append(type_comparisons_df)
-
+        #use only FC7 layer, remove all others:
+        comparisons_df.drop(['fc8', 'fc6', 'conv3','output','conv4','conv2','conv1','conv5'], inplace=True, axis=1)
         return comparisons_df

@@ -1,0 +1,32 @@
+2023-02-12 11:42:19.819844
+Running experiment small_ids_no_asians
+before id_folder: changes_while_run
+base root: /home/hdd_storage/MR/results/asians/
+after id_folder: 2_ids
+base root: /home/hdd_storage/MR/results/asians/
+experiment name_rd: small_ids_no_asians
+________   ITER   0 ________
+________  NUM IDS 2 ________
+________ NUM PICS 1 ________
+new exp name:  small_ids_no_asians
+/home/hdd_storage/mlflow/artifact_store/258/05aa4d4a536e47daa0afe0b540c563ae/artifacts
+/home/hdd_storage/MR/results/asians/2_ids
+training on dataset:  /home/ssd_storage/datasets/processed/1000_ids_num_changed/1000_ids_300_train_50_val_no_asians
+dir path:  /home/ssd_storage/datasets/processed/1000_ids_num_changed/1000_ids_300_train_50_val_no_asians/train
+ids:  960 imgs:  1
+filtered_ids from func:  960
+filtered_ids:  960
+960
+2
+root dir: small_ids_no_asians_2_ids_2_1_0
+experiment_name:  /home/hdd_storage/MR/results/asians/2_ids
+Traceback (most recent call last):
+  File "random_dataset_experiment_large_ids_made_for_small.py", line 241, in <module>
+    run_experiment(args.config_path)
+  File "random_dataset_experiment_large_ids_made_for_small.py", line 165, in run_experiment
+    lfw_tester = get_lfw_test(config, image_loader)
+  File "/home/mandy/project/facial_feature_impact_comparison/experiment_setup/lfw_test_setup.py", line 34, in get_lfw_test
+    reps_cache_path = config['LFW_TEST']['reps_cache_path']
+  File "/home/mandy/.conda/envs/mr/lib/python3.8/configparser.py", line 1254, in __getitem__
+    raise KeyError(key)
+KeyError: 'reps_cache_path'

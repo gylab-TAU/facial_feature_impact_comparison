@@ -9,17 +9,22 @@ class PerformanceTester(object):
 
     def test_performance(self, model, dataset_dir, pairs_list, labels_list, progress_label):
         # First we get all pair comparisons with the list of labels
+        print('first row in test performance')
         working_labels_list = None
+        print('self.__pairs_list_comparison: ', self.__pairs_list_comparison)
         comparisons_df, bad_indexes = self.__pairs_list_comparison.compare_pairs(model, dataset_dir, pairs_list, progress_label)
 
         # reverse the delete order so as not to mix up the results indexing
         if labels_list is not None:
+            print('second row in test performance -labels_list is not None')
+
             working_labels_list = labels_list.copy()
             bad_indexes.sort(reverse=True)
             for i in bad_indexes:
                 del working_labels_list[i]
 
         # Then, per layer we calculate the layer's accuracies
+        print('const.LAYER: ', const.LAYER)
         columns = [const.LAYER] + self.__rep_perf_analyzer.get_metric_name()
         reduced_performance_df = pd.DataFrame(columns=columns)
 
@@ -27,6 +32,6 @@ class PerformanceTester(object):
         reduced_performance_df = reduced_performance_df.set_index(const.LAYER)
         for key in comparisons_df.columns:
             reduced_performance_df.loc[key] = self.__rep_perf_analyzer.calc_performance(comparisons_df[key], working_labels_list)
-
+        print("reduced_performance_df: ", reduced_performance_df)
         return reduced_performance_df
 

@@ -17,10 +17,14 @@ def filter_ids(ids:list, num_pics: int):
         id_pics = list_dir(id)
         if len(id_pics) >= num_pics:
             filtered_ids.append(id)
+        else:
+            print('id:', (id))
+    print('filtered_ids from func: ', len(filtered_ids))
     return filtered_ids
 
 
 def choose_ids(filtered_ids: list, num_ids: int):
+    print(len(filtered_ids))
     return np.random.choice(filtered_ids, size=num_ids, replace=False)
 
 
@@ -37,6 +41,7 @@ class RandomExperimentImageLoader(ImageLoader):
         print('dir path: ', dir_path)
         all_ids = list_dir(dir_path)
         filtered_ids = filter_ids(all_ids, num_pics)
+        print('filtered_ids: ', len(filtered_ids))
         ids = [os.path.relpath(id, dir_path) for id in choose_ids(filtered_ids, num_ids)]
         if center_crop:
             return RandomSubsetDataset(dir_path, ids, self.center_crop_tt, target_transform=self.target_transform, num_pics_per_id=num_pics)

@@ -11,17 +11,21 @@ import data_prep.Datasets.finetuning_dataset
 
 def dataloaders_setup(config, processed_dataset, image_loader, triplet=False):
     phase_size_dict = json.loads(config['DATASET']['phase_size_dict'])
+    print('***********1***********')
 
     dataloaders = {}
     for phase in phase_size_dict:
+        print('***********2***********')
         is_train = phase == TRAIN_PHASE
         ds_path = os.path.join(processed_dataset, phase)
         # image_folder = image_loader.load_dataset(ds_path, center_crop=not is_train)
         image_folder = image_loader.load_dataset(ds_path, test=not is_train, triplet=triplet)
         if 'FINETUNING' in config:
+            print('***********3***********')
             if config['FINETUNING']['classes_mode'] == 'append':
                 image_folder = data_prep.Datasets.finetuning_dataset.FinetuningDataset(image_folder, int(config['MODELLING']['num_classes']))
-        # print(len(image_folder))
+        print(f'image_folder is id or image?:{image_folder}')
+        #
         pin_memory = torch.cuda.is_available() and not const.DEBUG
         dataloaders[phase] = data.DataLoader(
             image_folder,

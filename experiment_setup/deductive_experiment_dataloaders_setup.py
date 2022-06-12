@@ -9,6 +9,10 @@ def dataloaders_setup(config, processed_dataset, image_loader, num_ids: int = 0,
         train_path = os.path.join(processed_dataset, TRAIN_PHASE)
         val_path = os.path.join(processed_dataset, VAL_PHASE)
         train_image_folder = image_loader.load_random_dataset(train_path, num_ids, num_images, center_crop=False)
+        #add to csv the ids to train on (train and val):
+        # print(f'these are the ids we will train on:{train_image_folder.ids}')
+        # print(f'theses are the images we will train on: train_image_folder.samples : {train_image_folder.samples}')
+
         val_image_folder = image_loader.load_ids_dataset(val_path, train_image_folder.ids, center_crop=True)
         print(len(train_image_folder))
         dataloaders[TRAIN_PHASE] = data.DataLoader(

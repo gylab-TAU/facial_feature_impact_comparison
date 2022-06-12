@@ -42,6 +42,7 @@ def get_lfw_test(config, image_loader):
 
     if 'reps_layers' in config['LFW_TEST']:
         layers_extractor = ReflectionFactory().get_dict_extractor(config['LFW_TEST']['reps_layers'])
+
     else:
         layers_extractor = get_model_layers_dict
 
@@ -57,5 +58,6 @@ def get_lfw_test(config, image_loader):
 
     performance_tester = PerformanceTester(summary_metric, pairs_list_comparison)
 
+    print('lfw test performance_tester: ', performance_tester)
     return lfw_test.LFWTester(pairs_list, labels_list, config['LFW_TEST']['lfw_dir'], 'lfw', performance_tester)
 

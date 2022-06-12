@@ -7,6 +7,9 @@ import const
 import pandas as pd
 import os
 import mlflow
+from modelling.local_model_store import LocalModelStore
+from modelling.factories.model_initializer import ModelInitializer
+
 
 
 class CustomTestTrainer(object):
@@ -79,18 +82,35 @@ class CustomTestTrainer(object):
             self.__best_acc1 = max(phase_acc, self.__best_acc1)
 
             # Testing the model:
+            # uncomment the if after running the val tests and tilt all until line 115 (all in if)
             if self.__should_test(epoch+1):
 
-                # Validation testing and logging
+            # Validation testing and logging
                 print("VAL")
+                print("epoch number: ", epoch)
+            #   print("self.model before: ",self.model)
+            #     #load model
+            # model_store = LocalModelStore("vgg16",
+            #                 " /home/hdd_storage/MR/results/asians/",
+            #                     "small_ids_no_asians")
+            # model = ModelInitializer(["VGG", "vgg11", "vgg11_bn", "vgg13", "vgg13_bn", "vgg16", "vgg16_bn",
+            # "vgg19_bn", "vgg19", "AlexNet", "alexnet"]).get_model("vgg16", False, 500)
+            
+            # model, _1, _2, _3 = model_store.load_model_and_optimizer_loc(model, model_location="/home/hdd_storage/MR/results/asians/500_ids/small_ids_no_asians_500_ids_500_300_0/vgg16/models/119.pth")
+            # self.model = model
+
                 phase_loss, phase_acc = self.__per_phase(epoch, const.VAL_PHASE, data_loaders)
                 self.__avg_val_loss.append(phase_loss)
                 self.__val_acc.append(phase_acc)
                 self.__val_epochs.append(epoch)
                 self.__log_performance(epoch, const.VAL_PHASE)
+                print("model.training false, VAL part: ", self.model.training)
                 print(f"average loss: {phase_loss}, epoch acc@1: {phase_acc}")
                 mlflow.log_metric('val loss', phase_loss, epoch+1)
                 mlflow.log_metric('val acc', phase_acc, epoch+1)
+                #in order to save VAL accuracy:
+                with open('/home/mandy/project/facial_feature_impact_comparison/val_accuracy.txt', 'a') as val_acc:
+                    val_acc.write(str(phase_acc)+'\n')
 
                 # Save the model
                 is_best = phase_acc > self.__best_acc1
@@ -171,7 +191,7 @@ class CustomTestTrainer(object):
         return self.__performance_tester is not None\
                and self.__performance_threshold != 0 \
                and self.__num_epochs_to_test is not None \
-               and epoch % self.__num_epochs_to_test == 0
+                and epoch % self.__num_epochs_to_test == 0
 
     def __pre_measurements(self, phase, data_loaders):
         # batch_time, losses, top1, top5, data_time, progress = get_epoch_meters(self.train_loader, epoch)

@@ -42,6 +42,15 @@ def run_experiment(config_path):
 
     all_lfw_results = None
     all_output = None
+    # all_trained = pd.DataFrame(columns = ['identity', 'images', 'index']) 
+    # dataset_record = pd.DataFrame(columns = ['identity', 'images', 'index']) 
+    # all_trained = dict.fromkeys(['identity', 'images' , 'index'])
+    # dataset_record = dict.fromkeys(['identity', 'images' , 'index'])
+    # empty_list = []
+    # # all_trained = {'identity':[], 'images': [], 'index': []}
+    # dataset_record  = dict.fromkeys(['identity', 'images', 'index'], empty_list[:])
+    # all_trained  = dict.fromkeys(['identity', 'images', 'index'], empty_list[:])
+    dataset_record = {'identity': [], 'images': [], 'index': []}
 
 
     for id in num_ids:
@@ -54,9 +63,16 @@ def run_experiment(config_path):
                                                 config['GENERAL']['id_folder'])
         print('after id_folder:',config['GENERAL']['id_folder']  )
         print('base root:',config['GENERAL']['base_root_dir']  )
-        print('experiment name:', experiment_name)
+        print('experiment name before:', experiment_name)
+        experiment_name = experiment_name.replace("_asian_", "_asians_")
+        print('experiment name after:', experiment_name)
+        print('experiment name:', config['GENERAL']['experiment_name'])
+
         #mlflow set experiment
+        # exist = mlflow.get_experiment_by_name(config['GENERAL']['experiment_name'])
+        # print('exist:',exist)
         # if mlflow.get_experiment_by_name(config['GENERAL']['experiment_name']) is None:
+        #     print(mlflow.get_experiment_by_name(config['GENERAL']['experiment_name']), 'is none')
         #     mlflow.create_experiment(config['GENERAL']['experiment_name'], artifact_location=os.path.join(const.MLFLOW_ARTIFACT_STORE, config['GENERAL']['experiment_name']))
         # mlflow.set_experiment(config['GENERAL']['experiment_name'])
         mlflow.set_experiment(experiment_name)
@@ -64,13 +80,19 @@ def run_experiment(config_path):
 
         for pic in num_pics:
             for i in range(num_iterations):
+            # for i in range(8,8+ num_iterations):
                 print("________   ITER   " + str(i) + " ________")
                 print("________  NUM IDS " + str(id) + " ________")
                 print("________ NUM PICS " + str(pic) + " ________")
 
                 #mlflow set run name
                 if 'run_name' in config['GENERAL']:
+                    # print('run_name')
+                    #small ids:
                     run_name = config['GENERAL']['run_name'] +'_'+ str(i) +'_'+str(id) +'_'+ str(pic)
+                    #large ids:
+                    # run_name = config['GENERAL']['run_name'] #+'_'+ str(i) +'_'+str(id) +'_'+ str(pic)
+
 
                 #mlflow set run
                 with mlflow.start_run(run_name=run_name):
@@ -99,7 +121,7 @@ def run_experiment(config_path):
 
 
 
-                    config['GENERAL']['experiment_name'] = experiment_name + '_' + str(id) + '_' + str(pic) + '_' + str(i)
+                    config['GENERAL']['experiment_name'] = experiment_name  + '_' + str(id) + '_' + str(pic) + '_' + str(i)
                     print(config['GENERAL']['root_dir'])
                     # Create image loader (by the configuration)
                     im_size = int(config['DATASET']['image_size'])
@@ -112,6 +134,30 @@ def run_experiment(config_path):
 
                     # Create dataloader for the training
                     dataloaders = dataloaders_setup(config, config['DATASET']['raw_dataset_path'], image_loader, id, pic)
+                    #write ids and images train and val into csv
+                    # print('this is the type of value: ',type(dataset_record['index']))
+                    # dataset_record['index'] =
+                    dataset_record['identity'].append(dataloaders['train'].dataset.ids)
+
+                    # dataset_record['identity'].append(str(dataloaders['train'].dataset.ids))
+                    dataset_record['images'].append(dataloaders['train'].dataset.samples)
+
+                    dataset_record['index'].append(i)
+                    # dataset_record = dataset_record.append({'index': i}, ignore_index=True)
+                    # print('dataloaders attributes, images: ',dataloaders['train'].dataset.samples)
+                    # dataset_record = dataset_record.append({'images': str(dataloaders['train'].dataset.samples)}, ignore_index=True)
+
+                    # print('dataloaders attributes, ids: ',dataloaders['train'].dataset.ids)
+                    # dataset_record = dataset_record.append({'identity': str(dataloaders['train'].dataset.ids)}, ignore_index=True)
+                    all_trained_path = os.path.join(config['GENERAL']['dataset_path'],config['GENERAL']['experiment_name']+ '.csv')
+                    # if all_trained is None:
+                    # all_trained = dataset_record
+                    # else:
+                        # all_trained = all_trained.append(dataset_record)
+                    # dataset_df = pd.DataFrame.from_dict(all_trained) 
+                    # print('dataset_record: ', dataset_record)
+                    # print('all_trained: ', all_trained)
+
 
                     # Get access to pre trained models
                     model_store = LocalModelStore(config['MODELLING']['architecture'],
@@ -135,7 +181,7 @@ def run_experiment(config_path):
 
                     # Will train the model from start_epoch to (end_epoch - 1) with the given dataloaders
                     trainer.train_model(start_epoch, end_epoch, dataloaders)
-
+                    #LFW test
                     lfw_results = lfw_tester.test_performance(trainer.model)
                     lfw_results['index'] = overall_index
                     lfw_results['num_ids'] = id
@@ -144,13 +190,15 @@ def run_experiment(config_path):
                         all_lfw_results = lfw_results
                     else:
                         all_lfw_results = all_lfw_results.append(lfw_results)
-
+                    #representation
                     reps_behaviour_extractor = setup_pairs_reps_behaviour(config, image_loader)
                     if reps_behaviour_extractor != None:
                         output = reps_behaviour_extractor.compare_lists(trainer.model)
                         output['index'] = overall_index
                         output['num_ids'] = id
                         output['num_pics'] = pic
+                        print('this is the output for now!: ', output)
+                        print('this is the ALLoutput for now!: ', all_output)
                         # saving results for the meanwhile
                         results_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'],
                                                     config['REP_BEHAVIOUR']['output_filename'] + '.csv')
@@ -158,6 +206,7 @@ def run_experiment(config_path):
                         lfw_path = os.path.join(config['REP_BEHAVIOUR']['reps_results_path'], 'logs.csv')
                         all_lfw_path = os.path.join(config['LFW_TEST']['reps_results_path'], 'lfw_logs.csv')
                         os.makedirs(config['REP_BEHAVIOUR']['reps_results_path'], exist_ok=True)
+                        #to csv
                         output.to_csv(results_path)
                         lfw_results.to_csv(lfw_path)
                         all_lfw_results.to_csv(all_lfw_path)
@@ -166,10 +215,17 @@ def run_experiment(config_path):
                         else:
                             all_output = all_output.append(output)
                         mlflow.log_artifact(results_path)
+                        all_output.to_csv(results_path)
+
 
 
                 overall_index += 1
                 print('all_lfw_results:',all_lfw_results)
+
+            #write dataset
+            all_trained = pd.DataFrame(dataset_record)
+            all_trained.to_csv(all_trained_path)
+
 
     config['GENERAL']['experiment_name'] = experiment_name
     # lfw_path = os.path.join(root_dir, experiment_name + '_all', rep_dir, lfw_filename)
@@ -184,6 +240,17 @@ def run_experiment(config_path):
         all_output.to_csv(results_path)
         all_lfw_results.to_csv(lfw_path)
 
+    #write dataset
+    all_trained = pd.DataFrame(dataset_record)
+    all_trained.to_csv(all_trained_path)
+
+    # if all_trained is not None:
+    #     print('*****************************************')
+    #     print('all_trained', all_trained)
+    #     dataset_df = pd.DataFrame.from_dict(all_trained) 
+    #     print('dataset_df:' , dataset_df)
+
+    #     dataset_df.to_csv(all_trained_path)
 
     end = time.perf_counter()
     print(datetime.datetime.now())

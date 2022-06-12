@@ -26,11 +26,14 @@ from torchvision import transforms
 
 def setup_pairs_reps_behaviour(config, image_loader):
     if 'REP_BEHAVIOUR' not in config:
+        print('REP_BEHAVIOUR not')
         return
 
 
     if 'strongest_activating_image' in config['REP_BEHAVIOUR'] and config['REP_BEHAVIOUR']['strongest_activating_image'] == 'True':
         dataset_dir = config['REP_BEHAVIOUR']['dataset_dir']
+        print('dataset_dir: ', dataset_dir)
+
 
         center_crop_tt = transforms.Compose([
             transforms.Resize(json.loads(config['DATASET']['image_size'])),
@@ -51,6 +54,8 @@ def setup_pairs_reps_behaviour(config, image_loader):
 
     if 'identification_errors' in config['REP_BEHAVIOUR'] and config['REP_BEHAVIOUR']['identification_errors'] == 'True':
         ds_path = config['REP_BEHAVIOUR']['activations_dataset']
+        print('ds_path ident: ', ds_path)
+
         activations_dataset = data.DataLoader(
             image_loader.load_dataset(ds_path, with_path=True),
             batch_size=1,
@@ -62,6 +67,7 @@ def setup_pairs_reps_behaviour(config, image_loader):
 
     if 'activations' in config['REP_BEHAVIOUR'] and config['REP_BEHAVIOUR']['activations'] == 'True':
         ds_path = config['REP_BEHAVIOUR']['activations_dataset']
+        print('ds_path activations: ', ds_path)
         whitelist = json.loads(config['REP_BEHAVIOUR']['whitelist'])
         activations_dataset = data.DataLoader(
             image_loader.load_dataset(ds_path),
@@ -79,6 +85,8 @@ def setup_pairs_reps_behaviour(config, image_loader):
     if 'deep_activations' in config['REP_BEHAVIOUR'] and config['REP_BEHAVIOUR']['deep_activations'] == 'True':
         imgs_dirs = json.loads(config['REP_BEHAVIOUR']['imgs_dirs'])
         imgs_paths = json.loads(config['REP_BEHAVIOUR']['imgs_paths'])
+        print('imgs_dirs deep_activations: ', imgs_dirs)
+
         imgs_types_to_lists = {}
         for imgs_type in imgs_paths:
             print(imgs_type)
@@ -122,7 +130,7 @@ def setup_pairs_reps_behaviour(config, image_loader):
         pairs_paths = json.loads(config['REP_BEHAVIOUR']['pairs_paths'])
         pairs_types_to_lists = {}
         for pairs_type in pairs_paths:
-            print(pairs_type)
+            print('pairs_type in else: ',pairs_type)
             pairs_types_to_lists[pairs_type] = []
             with open(pairs_paths[pairs_type], 'r') as f:
                 for line in f:

@@ -18,6 +18,8 @@ def iterate_divided_dataset(links):
 
     for link in tqdm.tqdm(links, desc="Imgs"):
         abs_img_path = Path(link).resolve()
+        print('abs_img_path: ', abs_img_path)
+        print('imgs_map: ', imgs_map)
         if abs_img_path in imgs_map:
             print(f"Two links to the same img: {link} and {imgs_map[abs_img_path]} -> {abs_img_path}")
         else:

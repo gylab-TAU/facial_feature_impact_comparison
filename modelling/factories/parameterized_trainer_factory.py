@@ -13,6 +13,7 @@ class TrainerFactory(object):
         self.optimizer_initializer = optimizer_initializer
         self.lr_scheduler_initializer = lr_scheduler_initializer
         self.model_store = model_store
+        print('model_store: ', model_store)
 
     def get_trainer(self,
                     arch: str,

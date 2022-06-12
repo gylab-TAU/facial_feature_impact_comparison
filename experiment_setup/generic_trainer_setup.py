@@ -18,9 +18,9 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
                                   config['GENERAL']['root_dir'])
     checkpoint_path_param_name = 'checkpoint_path'
     checkpoint_path = None
-    if checkpoint_path_param_name in config['MODELLING']:
-        checkpoint_path = config['MODELLING'][checkpoint_path_param_name]
-        print(checkpoint_path)
+    if 'checkpoint_path_param_name' in config['MODELLING']:
+        checkpoint_path = config['MODELLING']['checkpoint_path_param_name']
+        print("checkpoint_path: ", checkpoint_path)
         if checkpoint_path == '':
             checkpoint_path = None
         else:
@@ -68,7 +68,7 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
                                           num_epochs_to_test=num_epochs_to_test,
                                           num_batches_per_epoch_limit=num_batches_per_epoch_limit, test_type=perf_test_name,
                                           perf_logger=perf_logger, logs_path=logs_path, finetuning=('FINETUNING' in config))
-
+    print('checkpont trainer: ', )
     return trainer
 
 

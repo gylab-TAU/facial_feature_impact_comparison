@@ -23,8 +23,9 @@ def save_inverted(im_path: str, src_dir: str, output_dir: str):
 
 
 def invert_dataset(src_dir: str, output_dir: str):
-
-    for img in tqdm(glob(os.path.join(src_dir, *,'*.JPG'))):
+    print((os.path.join(src_dir, '*.jpg')))
+    for img in tqdm(glob(os.path.join(src_dir, '*.jpg'))):
+        print(img)
         save_inverted(img, src_dir, output_dir)
 
 
@@ -38,11 +39,12 @@ def get_args():
 
 
 if __name__ == '__main__':
-    dirs = {'/home/ssd_storage/datasets/MR/Monkeys/raw'
+    dirs = {'/home/ssd_storage/datasets/MR/white_dataset/white_hv_dataset/test'
     }
     for label in dirs:
         src_dir = label
-        inverted_output_dir = f'/home/ssd_storage/datasets/MR/Monkeys/raw'
+        print(src_dir)
+        inverted_output_dir = f'/home/ssd_storage/datasets/MR/white_dataset/white_hv_dataset/test'
         os.makedirs(inverted_output_dir, exist_ok=True)
         invert_dataset(src_dir, inverted_output_dir)
 
