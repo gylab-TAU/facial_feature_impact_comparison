@@ -25,7 +25,10 @@ def get_trainer(config, num_classes, start_epoch, perf_tester=None):
         if checkpoint_path == '':
             checkpoint_path = None
         else:
-            mlflow.log_param('checkpoint_path', checkpoint_path)
+            if 'checkpoint_dir' in config['MODELLING']:
+                mlflow.log_param('checkpoint_dir', config['MODELLING']['checkpoint_dir'])
+            else:
+                mlflow.log_param('checkpoint_path', checkpoint_path)
 
     trainer_factory = TripletTrainerFactory(
         TripletModelInitializer(json.loads(config['MODELLING']['feature_parallelized_architectures'])),

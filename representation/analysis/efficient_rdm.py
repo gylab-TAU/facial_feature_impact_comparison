@@ -55,6 +55,7 @@ class EfficientRDM(object):
         layers_df = {}
         for l in layers_reps:
             relu = torch.nn.ReLU()
+            print(layers_reps[l].shape)
             layers_reps[l] = layers_reps[l] / layers_reps[l].norm(dim=1, p=2)[:, None]
             distances = relu(1 - torch.mm(layers_reps[l], layers_reps[l].transpose(0, 1)))
             distances = distances.cpu().detach().numpy()

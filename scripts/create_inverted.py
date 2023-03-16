@@ -33,16 +33,28 @@ def get_args():
 
 
 if __name__ == '__main__':
-    args = get_args()
-    dirs = [
-        # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_bird_species_rdm_30_10_num-classes_30_{'images': 10}/images",
-        # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_individual_birds_rdm_30_10_num-classes_30_{'images': 10}/images",
-        # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_faces_rdm_30_10_num-classes_30_{'images': 10}/images",
-        # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_inanimate_rdm_30_10_num-classes_30_{'images': 10}/images"
-            "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_max_img_faces_rdm_30_10_num-classes_30_{'images': 10}/images"
-    ]
-    for src_dir in dirs:
-        inverted_output_dir = f'{src_dir}_inverted'
+    # args = get_args()
+    # dirs = [
+    #     # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_bird_species_rdm_30_10_num-classes_30_{'images': 10}/images",
+    #     # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_individual_birds_rdm_30_10_num-classes_30_{'images': 10}/images",
+    #     # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_faces_rdm_30_10_num-classes_30_{'images': 10}/images",
+    #     # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_inanimate_rdm_30_10_num-classes_30_{'images': 10}/images"
+    #         "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_max_img_faces_rdm_30_10_num-classes_30_{'images': 10}/images"
+    # ]
+    # dirs = {
+    #     'species': '/home/ssd_storage/datasets/processed/verification_datasets/bird_species',
+    #     'faces': "/home/ssd_storage/datasets/processed/30_max_imgs_vggface2_mtcnn white_list_{'train': 0.8, 'val': 0.2}/val",
+    #     'sociable_weavers': "/home/ssd_storage/datasets/processed/phase_perc_size/individual_birds_single_species_{'train': 0.8, 'val': 0.2}/val",
+    #     'inanimate_objects': "/home/ssd_storage/datasets/processed/num_classes/30_cls_inanimate_imagenet/val"
+    # }
+    dirs = {
+        'Upright': '/home/ssd_storage/datasets/Thatcher/Upright/',
+    }
+    for label in dirs:
+        src_dir = dirs[label]
+        print(src_dir)
+        # inverted_output_dir = f'/home/ssd_storage/datasets/processed/verification_datasets/{label}_inverted'
+        inverted_output_dir = f'/home/ssd_storage/datasets/Thatcher/Inverted/'
         os.makedirs(inverted_output_dir, exist_ok=True)
         invert_dataset(src_dir, inverted_output_dir)
     # inverted_output_dir = f'{args.src_dir}_inverted'

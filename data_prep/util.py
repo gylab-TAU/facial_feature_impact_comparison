@@ -1,9 +1,18 @@
 import os
 import shutil
+from typing import List
+
 from tqdm import tqdm
 
 
-def transfer_datapoints(dest_dataset_loc, source_path, data_points):
+def transfer_datapoints(dest_dataset_loc: str, source_path: str, data_points: List[str]) -> None:
+    """
+    Create a symlink (or copy, if symlink cannot be made) for all data_points in source_path to the new dest_dataset_loc
+
+    :dest_dataset_loc: The destination directory, (where to move the files to)
+    :source_path: The source directory containing the files
+    :data_points: The absolute path of all files to copy
+    """
     # pbar = tqdm(data_points)
     for point in data_points:
         dest_point = os.path.join(dest_dataset_loc, os.path.relpath(point, source_path))

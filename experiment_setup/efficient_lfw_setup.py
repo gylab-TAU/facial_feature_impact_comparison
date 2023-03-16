@@ -24,7 +24,7 @@ def get_lfw_test(config, image_loader):
     dataset = VerificationDataset(config['LFW_TEST']['lfw_dir'], pairs_list, image_loader, labels_list)
     dl = data.DataLoader(
         dataset,
-        batch_size=256,
+        batch_size=1, # 256
         num_workers=4,
         shuffle=False,
         pin_memory=False,

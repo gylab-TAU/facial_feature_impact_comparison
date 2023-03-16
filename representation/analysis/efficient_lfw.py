@@ -85,20 +85,26 @@ class EfficientLFW(object):
                 layers_reps2[l] = []
 
             # For every pair of images in the verification test:
-            for im1, im2, im1_path, im2_path, label in tqdm(self.__dataset, desc=self.__progress_label):
-                labels.append(label)
-                # Get the representations
-                point_rep1 = self.__get_img_reps(re, im1, im1_path[0])
-                point_rep2 = self.__get_img_reps(re, im2, im2_path[0])
+            pbar = tqdm(range(len(self.__dataset)), desc=self.__progress_label)
+            myiter = iter(self.__dataset)
+            for _ in pbar:
+                try:
+                    im1, im2, im1_path, im2_path, label = next(myiter)
+                    labels.append(label)
+                    # Get the representations
+                    point_rep1 = self.__get_img_reps(re, im1, im1_path[0])
+                    point_rep2 = self.__get_img_reps(re, im2, im2_path[0])
 
-                # If a matrix, flatten them (like after conv1 we get a tensor of (Height x Width x Depth),
-                # flattening the tensor to a vector will enable us to use the same code for calculating the distances
-                for l in layers_reps1:
-                    t = torch.flatten(point_rep1[l].cuda(), start_dim=1)
-                    layers_reps1[l].append(t)
-                for l in layers_reps2:
-                    t = torch.flatten(point_rep2[l].cuda(), start_dim=1)
-                    layers_reps2[l].append(t)
+                    # If a matrix, flatten them (like after conv1 we get a tensor of (Height x Width x Depth),
+                    # flattening the tensor to a vector will enable us to use the same code for calculating the distances
+                    for l in layers_reps1:
+                        t = torch.flatten(point_rep1[l].cuda(), start_dim=1)
+                        layers_reps1[l].append(t)
+                    for l in layers_reps2:
+                        t = torch.flatten(point_rep2[l].cuda(), start_dim=1)
+                        layers_reps2[l].append(t)
+                except:
+                    print(f"error on {im1_path}, {im2_path}")
 
             for l in layers_reps1:
                 layers_reps1[l] = torch.cat(layers_reps1[l])

@@ -12,10 +12,13 @@ class MultiListComparer(object):
                                                                              self.__pairs_types_to_dir[pairs_type],
                                                                              self.__pairs_types_to_lists[pairs_type],
                                                                              pairs_type)
-            type_comparisons_df['type'] = pairs_type
-            if comparisons_df is None:
-                comparisons_df = type_comparisons_df
+            if type_comparisons_df is not None:
+                type_comparisons_df['type'] = pairs_type
+                if comparisons_df is None:
+                    comparisons_df = type_comparisons_df
+                else:
+                    comparisons_df = comparisons_df.append(type_comparisons_df)
             else:
-                comparisons_df = comparisons_df.append(type_comparisons_df)
+                print(f"Could not work on {pairs_type}")
 
         return comparisons_df

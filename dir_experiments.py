@@ -170,6 +170,9 @@ if __name__ == '__main__':
     const.DEBUG = args.debug
     if args.config_dir is not None:
         config_paths = glob.glob(os.path.join(args.config_dir, '*.cfg'))
+        # config_paths = config_paths + glob.glob(os.path.join(args.config_dir, '*', '*.cfg'))
+        # config_paths = config_paths + glob.glob(os.path.join(args.config_dir, '*', '*', '*.cfg'))
+        print(len(config_paths))
         for path in config_paths:
             run_experiment(path)
     else:

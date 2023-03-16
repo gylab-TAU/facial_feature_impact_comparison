@@ -116,6 +116,17 @@ def get_verification_pairs(ds_path: str) -> pd.DataFrame:
     return generate_all_pairs(cls2imgs)
 
 
+def get_verification_pairs_audio(ds_path: str) -> pd.DataFrame:
+    wavs = globall(ds_path)
+    cls2imgs = {}
+    for wav in wavs:
+        cl = wav.split('_')[0]
+        if cl not in cls2imgs:
+            cls2imgs[cl] = []
+        cls2imgs[cl].append(wav)
+
+    return generate_all_pairs(cls2imgs)
+
 def split_to_balanced_lists(all_verification_pairs: pd.DataFrame, n_batches: int, batch_size: int) -> List[pd.DataFrame]:
     # Divide to positive and negatives
     positive = all_verification_pairs[all_verification_pairs['same'] == 1]
@@ -144,7 +155,7 @@ def split_to_balanced_lists(all_verification_pairs: pd.DataFrame, n_batches: int
 
 
 def process_ds(ds_path: str, output_dir: str, num_batches: int, batch_size: int) -> None:
-    pairs = get_verification_pairs(ds_path)
+    pairs = get_verification_pairs_audio(ds_path)
     pairs.to_csv(path.join(output_dir, 'all.csv'))
 
     batches = split_to_balanced_lists(pairs, num_batches, batch_size)
@@ -155,13 +166,15 @@ def process_ds(ds_path: str, output_dir: str, num_batches: int, batch_size: int)
 
 
 if __name__ == '__main__':
-    datasets = ['/home/ssd_storage/datasets/processed/verification_datasets/bird_species',
-                "/home/ssd_storage/datasets/processed/phase_perc_size/individual_birds_single_species_{'train': 0.8, 'val': 0.2}/val",
-                "/home/ssd_storage/datasets/processed/30_max_imgs_vggface2_mtcnn white_list_{'train': 0.8, 'val': 0.2}/val",
-                "/home/ssd_storage/datasets/processed/num_classes/30_cls_inanimate_imagenet/val"]
-    inner_dir = ['species', 'sociable_weavers', 'faces', 'inanimate_objects']
+    # datasets = ['/home/ssd_storage/datasets/processed/verification_datasets/bird_species',
+    #             "/home/ssd_storage/datasets/processed/phase_perc_size/individual_birds_single_species_{'train': 0.8, 'val': 0.2}/val",
+    #             "/home/ssd_storage/datasets/processed/30_max_imgs_vggface2_mtcnn white_list_{'train': 0.8, 'val': 0.2}/val",
+    #             "/home/ssd_storage/datasets/processed/num_classes/30_cls_inanimate_imagenet/val"]
 
-    pairs_output_dir = "/home/ssd_storage/experiments/Expertise/verification_pairs_lists/final_form"
+    datasets = ['/home/roni/Speech2VGG/audio']
+    inner_dir = ['audio']
+
+    pairs_output_dir = "/home/ssd_storage/experiments/audio"
 
     for ds, inner in zip(datasets, inner_dir):
         process_ds(ds, path.join(pairs_output_dir, inner), 30, 50)

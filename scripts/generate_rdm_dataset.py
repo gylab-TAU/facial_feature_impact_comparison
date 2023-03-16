@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 
 def process(num_classes: int, output_dataset_dir: str, num_images: int, src_dataset_dir: str, dataset_name: str):
     processor = MultiStageProcessor([
-        NumClassProcessor(num_classes, num_classes, os.path.join(output_dataset_dir, 'random_80_cls')),
+        NumClassProcessor(num_classes, num_classes, os.path.join(output_dataset_dir, 'num_classes')),
         PhaseSizeProcessor(os.path.join(output_dataset_dir, f'random_{num_images}_imgs_from_{num_classes}_cls'), {'images': num_images})])
 
     return processor.process_dataset(src_dataset_dir, dataset_name)[0]
@@ -17,8 +17,8 @@ def get_args():
     parser = ArgumentParser()
     parser.add_argument('--num_cls', type=int, default=30)
     parser.add_argument('--num_imgs', type=int, default=10)
-    parser.add_argument('--output_dataset_dir', type=str, default='/home/ssd_storage/datasets/processed')
-    parser.add_argument('--src_dataset_dir', type=str, default="/home/KAD/project/datasets/processed/phase_perc_size/260_birds_consolidated_{'train': 0.8, 'val': 0.2}/val")
+    parser.add_argument('--output_dataset_dir', type=str, default='/home/ssd_storage/datasets/Expertise/RDMs/')
+    # parser.add_argument('--src_dataset_dir', type=str, default="/home/KAD/project/datasets/processed/phase_perc_size/260_birds_consolidated_{'train': 0.8, 'val': 0.2}/val")
     parser.add_argument('--dataset_name', type=str, default='familiar_birds_rdm')
 
     return parser.parse_args()
@@ -26,12 +26,19 @@ def get_args():
 
 if __name__ == '__main__':
     args = get_args()
+    # dirs = {
+    #     # 'familiar_bird_species_rdm_30_10': "/home/KAD/project/datasets/processed/phase_perc_size/260_birds_consolidated_{'train': 0.8, 'val': 0.2}/val",
+    #     # 'familiar_individual_birds_rdm_30_10': "/home/ssd_storage/datasets/processed/phase_perc_size/only_30_class_species",
+    #     # 'familiar_faces_rdm_30_10': "/home/ssd_storage/datasets/processed/num_classes/faces_260_num-classes_260/val",
+    #     # 'familiar_inanimate_rdm_30_10': "/home/ssd_storage/datasets/processed/num_classes/260_inanimate_imagenet_num-classes_260/val",
+    #     'familiar_max_img_faces_rdm_30_10': "/home/ssd_storage/datasets/processed/30_max_imgs_vggface2_mtcnn white_list_{'train': 0.9, 'val': 0.1}/val"
+    # }
+
     dirs = {
-        # 'familiar_bird_species_rdm_30_10': "/home/KAD/project/datasets/processed/phase_perc_size/260_birds_consolidated_{'train': 0.8, 'val': 0.2}/val",
-        # 'familiar_individual_birds_rdm_30_10': "/home/ssd_storage/datasets/processed/phase_perc_size/only_30_class_species",
-        # 'familiar_faces_rdm_30_10': "/home/ssd_storage/datasets/processed/num_classes/faces_260_num-classes_260/val",
-        # 'familiar_inanimate_rdm_30_10': "/home/ssd_storage/datasets/processed/num_classes/260_inanimate_imagenet_num-classes_260/val",
-        'familiar_max_img_faces_rdm_30_10': "/home/ssd_storage/datasets/processed/30_max_imgs_vggface2_mtcnn white_list_{'train': 0.9, 'val': 0.1}/val"
+        'species_rdm_30_10': '/home/ssd_storage/datasets/processed/30_class_validation_balanced_bird_species/val',
+        'sociable_weavers_rdm_30_10': "/home/ssd_storage/datasets/processed/phase_perc_size/individual_birds_single_species_{'train': 0.8, 'val': 0.2}/val",
+        'faces_rdm_30_10': "/home/ssd_storage/datasets/processed/30_max_imgs_vggface2_mtcnn white_list_{'train': 0.8, 'val': 0.2}/val",
+        'inanimate_objects_rdm_30_10': '/home/ssd_storage/datasets/processed/num_classes/30_cls_inanimate_imagenet/val',
     }
     for ds_name in dirs:
         print(f'{ds_name}:')

@@ -1,6 +1,7 @@
 import json
 import os
 import torch.utils.data as data
+import pandas as pd
 
 from representation.analysis.MultiDatasetCompare import MultiDatasetComparer
 from representation.analysis.metrics.euclidian_distance_compare import EuclidianDistanceCompare
@@ -122,14 +123,20 @@ def setup_pairs_reps_behaviour(config, image_loader):
         pairs_paths = json.loads(config['REP_BEHAVIOUR']['pairs_paths'])
         pairs_types_to_lists = {}
         for pairs_type in pairs_paths:
-            print(pairs_type)
-            pairs_types_to_lists[pairs_type] = []
-            with open(pairs_paths[pairs_type], 'r') as f:
-                for line in f:
-                    labeled_pair = line.split(' ')
-                    print(labeled_pair)
-                    labeled_pair[1] = labeled_pair[1].replace(os.linesep, '')
-                    pairs_types_to_lists[pairs_type].append(labeled_pair)
+            df = pd.read_csv(pairs_paths[pairs_type], sep=' ', index_col=False, names=['im1', 'im2'],
+                             dtype={'im1': str, 'im2': str})
+            pairs_list = df[['im1', 'im2']].to_records(index=False)
+            pairs_types_to_lists[pairs_type] = pairs_list
+            print(pairs_types_to_lists[pairs_type])
+            # quit()
+            # print(pairs_type)
+            # pairs_types_to_lists[pairs_type] = []
+            # with open(pairs_paths[pairs_type], 'r') as f:
+            #     for line in f:
+            #         labeled_pair = line.split(' ')
+            #         print(labeled_pair)
+            #         labeled_pair[1] = labeled_pair[1].replace(os.linesep, '')
+            #         pairs_types_to_lists[pairs_type].append(labeled_pair)
         pairs_list_comparison = PairsListComparer(reps_cache_path, image_loader, comparison_calc,
                                                   get_model_layers_dict)
         return MultiListComparer(pairs_types_to_lists, pairs_image_dirs, pairs_list_comparison)

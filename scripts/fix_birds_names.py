@@ -30,14 +30,17 @@ if __name__ == '__main__':
     # args = get_args()
     # rename_dir(args.dir)
     dirs = [
-        "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_bird_species_rdm_30_10_num-classes_30_{'images': 10}/images",
-        "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_individual_birds_rdm_30_10_num-classes_30_{'images': 10}/images",
-        "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_faces_rdm_30_10_num-classes_30_{'images': 10}/images",
-        "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_inanimate_rdm_30_10_num-classes_30_{'images': 10}/images",
-        "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_bird_species_rdm_30_10_num-classes_30_{'images': 10}/images_inverted",
-        "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_individual_birds_rdm_30_10_num-classes_30_{'images': 10}/images_inverted",
-        "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_faces_rdm_30_10_num-classes_30_{'images': 10}/images_inverted",
-        "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_inanimate_rdm_30_10_num-classes_30_{'images': 10}/images_inverted"
+        # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_bird_species_rdm_30_10_num-classes_30_{'images': 10}/images",
+        # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_individual_birds_rdm_30_10_num-classes_30_{'images': 10}/images",
+        # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_faces_rdm_30_10_num-classes_30_{'images': 10}/images",
+        # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_inanimate_rdm_30_10_num-classes_30_{'images': 10}/images",
+        # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_bird_species_rdm_30_10_num-classes_30_{'images': 10}/images_inverted",
+        # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_individual_birds_rdm_30_10_num-classes_30_{'images': 10}/images_inverted",
+        # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_faces_rdm_30_10_num-classes_30_{'images': 10}/images_inverted",
+        # "/home/ssd_storage/datasets/processed/random_10_imgs_from_30_cls/familiar_inanimate_rdm_30_10_num-classes_30_{'images': 10}/images_inverted"
+    ]
+    dirs = [
+        "/home/ssd_storage/datasets/Expertise/RDMs/random_10_imgs_from_30_cls/species_rdm_30_10_num-classes_30_{'images': 10}/images/"
     ]
     for dir in dirs:
         rename_dir(dir)
