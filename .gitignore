@@ -1,0 +1,16 @@
+**/__pycache__/
+**.zip
+**.out
+**.pyc
+# **.git/objects/** */
+configs/face_specificity/review_comments/faces_1000.cfg
+configs/memory_decoder/pretrained_prototype.cfg
+configs/memory_decoder/nearest_neighbor_pairs.csv
+configs/memory_decoder/nearest_neighbor_pairs.csv
+**configs/memory_decoder/nearest_neighbor_pairs.csv
+.configs/memory_decoder/nearest_neighbor_pairs.csv
+**nearest_neighbor_pairs.csv
+.idea/** */
+mlruns/** */
+.idea/**
+mlruns/**
